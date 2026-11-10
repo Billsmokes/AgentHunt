@@ -1,6 +1,6 @@
-# DropHunt
+# AgentHunt
 
-**DropHunt** is a decentralized, open-source crypto airdrop tracker. No server, no account, no wallet connect, no ads, no trackers. Your data stays on your own device.
+**AgentHunt** is a decentralized, open-source crypto airdrop tracker. No server, no account, no wallet connect, no ads, no trackers. Your data stays on your own device.
 
 ## Features
 
@@ -15,7 +15,7 @@
 
 ## Decentralized
 
-DropHunt is a single static HTML file. There is no backend and no database:
+AgentHunt is a single static HTML file. There is no backend and no database:
 
 - Your airdrops are stored in a JSON file on your own device — export it, back it up, move it anywhere.
 - Host it anywhere: GitHub Pages, IPFS, any static host — or just open the file in a browser. It works offline.
