@@ -193,6 +193,8 @@
         color: var(--chip-ink);
       }
 
+      /* Tab menu — every tab is always visible: the bar wraps onto a
+         second row instead of scrolling sideways and hiding links. */
       nav.tabs {
         position: sticky;
         top: 0;
@@ -200,28 +202,45 @@
         background: var(--bg);
         border-bottom: 1px solid var(--line);
         display: flex;
-        gap: 2px;
-        overflow-x: auto;
-        scrollbar-width: none;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px 0;
       }
-      nav.tabs::-webkit-scrollbar {
-        display: none;
-      }
-      nav.tabs a {
+      nav.tabs .tab {
+        border: 1px solid var(--line2);
+        background: var(--surface);
         color: var(--ink2);
+        border-radius: 999px;
+        padding: 8px 14px;
         font-size: 13.5px;
         font-weight: 600;
-        padding: 12px 14px;
-        white-space: nowrap;
-        border-bottom: 3px solid transparent;
       }
-      nav.tabs a:hover {
+      nav.tabs .tab:hover {
         color: var(--ink);
-        text-decoration: none;
+        border-color: var(--ink3);
       }
-      nav.tabs a.on {
-        color: var(--ink);
-        border-bottom-color: var(--green);
+      nav.tabs .tab.on {
+        background: var(--chip);
+        color: var(--chip-ink);
+        border-color: var(--chip);
+      }
+
+      /* Tab panels — only the active tab's sections are shown, so the
+         page is one short screen instead of one very long scroll. */
+      section[data-panel] {
+        display: none;
+      }
+      section[data-panel].on {
+        display: block;
+      }
+      /* Headings land fully visible below the sticky tab bar. */
+      section {
+        scroll-margin-top: 78px;
+      }
+      @media (max-width: 640px) {
+        section {
+          scroll-margin-top: 122px;
+        }
       }
 
       /* stats */
@@ -480,6 +499,11 @@
       .score.low {
         border-color: var(--amber);
         color: var(--amber);
+      }
+      .score.none {
+        border-style: dashed;
+        border-color: var(--line2);
+        color: var(--ink3);
       }
       .pill {
         display: inline-block;
@@ -1169,26 +1193,36 @@
     </header>
 
     <div class="wrap">
-      <!-- Sticky navigation — one link per section below -->
-      <nav class="tabs" id="tabs">
-        <a href="#fokus" class="on" data-i18n="nav_focus">Today's Focus</a>
-        <a href="#tracker" data-i18n="nav_tracker">My Tracker</a>
-        <a href="#radar" data-i18n="nav_radar">Deadline Radar</a>
-        <a href="#narasi" data-i18n="nav_narr">Trending Narratives</a>
-        <a href="#peluang" data-i18n="nav_opp">Nov 2026 Opportunities</a>
-        <a href="#cek" data-i18n="nav_check">Anti-Scam Check</a>
-        <a href="#alat" data-i18n="nav_tools">Hunter Tools</a>
-        <a href="#banding" data-i18n="nav_diff">Why It's Different</a>
-        <a href="#tambah" data-i18n="nav_add">Add Airdrop</a>
-        <a href="#desentral" data-i18n="nav_decent">Decentralized</a>
-        <a href="#kaamanan" data-i18n="nav_safety">Safety</a>
+      <!-- Tab menu — six simple tabs; each shows only its own panel(s).
+           Today = Focus + Deadline Radar · Tracker = My Tracker + Add form ·
+           Opportunities = Narratives + Opportunities · About = Why Different
+           + Decentralized + Safety. Switching is done by showTab() (block 3). -->
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
+        <button class="tab on" data-tab="today" role="tab" aria-selected="true" data-i18n="nav_focus">
+          Today's Focus
+        </button>
+        <button class="tab" data-tab="tracker" role="tab" aria-selected="false" data-i18n="nav_tracker">
+          My Tracker
+        </button>
+        <button class="tab" data-tab="opp" role="tab" aria-selected="false" data-i18n="nav_opp">
+          Nov 2026 Opportunities
+        </button>
+        <button class="tab" data-tab="check" role="tab" aria-selected="false" data-i18n="nav_check">
+          Anti-Scam Check
+        </button>
+        <button class="tab" data-tab="tools" role="tab" aria-selected="false" data-i18n="nav_tools">
+          Hunter Tools
+        </button>
+        <button class="tab" data-tab="about" role="tab" aria-selected="false" data-i18n="nav_about">
+          About
+        </button>
       </nav>
 
       <!-- Stats bar — filled in by renderStats() (script block 3) -->
       <div class="stats" id="stats"></div>
 
       <!-- Today's Focus — cards rendered by renderFocus() -->
-      <section id="fokus" style="margin-top: 6px">
+      <section id="fokus" data-panel="today" class="on" style="margin-top: 6px">
         <div class="focus">
           <h2 id="focusTitle">⚡ Today's Focus — Tuesday, 10 Nov 2026</h2>
           <p class="fsub" data-i18n="focus_sub">
@@ -1200,7 +1234,7 @@
       </section>
 
       <!-- Deadline Radar — list rendered by renderRadar() -->
-      <section id="radar">
+      <section id="radar" data-panel="today" class="on">
         <div class="sec-head">
           <h2 data-i18n="h_radar">Deadline Radar</h2>
           <span class="meta" data-i18n="meta_radar">SORTED · FROM TRACKER + OPPORTUNITIES</span>
@@ -1222,7 +1256,7 @@
       </section>
 
       <!-- My Tracker — cards rendered by renderTracker() -->
-      <section id="tracker">
+      <section id="tracker" data-panel="tracker">
         <div class="sec-head">
           <h2 data-i18n="h_tracker">My Tracker</h2>
           <span class="meta" data-i18n="meta_tracker"
@@ -1248,7 +1282,7 @@
       </section>
 
       <!-- Trending Narratives — cards rendered by renderNarratives(); tapping one filters the Opportunities below -->
-      <section id="narasi">
+      <section id="narasi" data-panel="opp">
         <div class="sec-head">
           <h2 data-i18n="h_narr">Trending Narratives on Social Media</h2>
           <span class="meta">SNAPSHOT 8 NOV 2026 · DEXTRADING + BINANCE SQUARE</span>
@@ -1292,7 +1326,7 @@
       </section>
 
       <!-- Opportunities — cards rendered by renderOpps(); search / filter / sort toolbar above them -->
-      <section id="peluang">
+      <section id="peluang" data-panel="opp">
         <div class="sec-head">
           <h2 data-i18n="h_opp">Airdrop Opportunities — November 2026</h2>
           <span class="meta" data-i18n="meta_opp"
@@ -1333,7 +1367,7 @@
       </section>
 
       <!-- Anti-Scam Check — the verdict logic is the scamForm handler in script block 3 -->
-      <section id="cek">
+      <section id="cek" data-panel="check">
         <div class="sec-head">
           <h2 data-i18n="h_check">Anti-Scam Check — Before You Sign</h2>
           <span class="meta" data-i18n="meta_check"
@@ -1431,7 +1465,7 @@
       </section>
 
       <!-- Hunter Tools — farming cost calculator (renderCalc) + daily routine checklist (renderRoutine) -->
-      <section id="alat">
+      <section id="alat" data-panel="tools">
         <div class="sec-head">
           <h2 data-i18n="h_tools">Hunter Tools</h2>
           <span class="meta" data-i18n="meta_tools">COST CALCULATOR + DAILY ROUTINE</span>
@@ -1479,7 +1513,7 @@
       </section>
 
       <!-- Comparison table — rows come from CMP_ROWS in script block 2, rendered by renderCmp() -->
-      <section id="banding">
+      <section id="banding" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_diff">How AgentHunt Differs from Other Airdrop Apps</h2>
           <span class="meta" data-i18n="meta_diff">Why It's Better</span>
@@ -1497,7 +1531,7 @@
       </section>
 
       <!-- Add Airdrop — submitted through the addForm handler in script block 3 -->
-      <section id="tambah">
+      <section id="tambah" data-panel="tracker">
         <div class="sec-head">
           <h2 data-i18n="h_add">Add an Airdrop to Your Tracker</h2>
           <span class="meta" data-i18n="meta_add">MANUAL · NO ACCOUNT</span>
@@ -1570,7 +1604,7 @@
       </section>
 
       <!-- Decentralized / open source — static explainer text -->
-      <section id="desentral">
+      <section id="desentral" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_decent">Truly Decentralized</h2>
           <span class="meta" data-i18n="meta_decent">NO SERVER · NO DATABASE · NO ACCOUNT</span>
@@ -1648,7 +1682,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       </section>
 
       <!-- Safety — static explainer text -->
-      <section id="kaamanan">
+      <section id="kaamanan" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_safety">Safety Before You Join</h2>
           <span class="meta" data-i18n="meta_safety">THE SCREENING RULES ALREADY IN USE</span>
@@ -1804,6 +1838,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           nav_add: "Add Airdrop",
           nav_decent: "Decentralized",
           nav_safety: "Safety",
+          nav_about: "About",
           focus_sub:
             "What a hunter needs to do today, summed up in 10 seconds. Ordinary airdrop list sites just show hundreds of entries; here only what matters rises to the top.",
           h_radar: "Deadline Radar",
@@ -2004,6 +2039,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           pill_active: "Still Joinable",
           pill_claim: "Claim / Distribution",
           pill_closed: "Closed / Not Official",
+          score_word: "Score",
+          no_score: "No score yet",
+          score_hint:
+            "Independent screening score (e.g. AirdropBuzz) — 65 or higher passes, the same threshold as the Anti-Scam Check. No score means no independent score exists yet; it is never made up.",
           filtering: "Filtering opportunities by narrative:",
           already_in: "Already in your tracker: ",
           added_to: "Added to tracker: ",
@@ -2119,6 +2158,195 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         h_safety: "Keamanan Sebelum Ikut",
         footer_note:
           "AgentHunt · Bukan nasihat keuangan. Snapshot 10 Nov 2026 — selalu cek ulang deadline dan aturan resmi proyek sebelum mengeluarkan gas atau dana.",
+        nav_about: "Tentang",
+        meta_opp: "DICEK 4–10 NOV 2026 · AIRDROPBUZZ / BINANCE / COINSPEAKER",
+        narr_note:
+          "Snapshot dibekukan saat aplikasi ini dibuat: Selasa, 10 Nov 2026, 11:45 WIB. Narasi bergerak cepat — angka di atas bukan harga live. Sumber:",
+        meta_check: "ATURAN SCREENING KAMU · JALAN OFFLINE DI BROWSER",
+        s_red: "DappBay Red Alarm (BNB Chain)",
+        o_clean: "Tidak terdaftar (bersih)",
+        o_unchecked: "Belum dicek",
+        o_flagged: "FLAGGED — terdaftar di Red Alarm",
+        s_contract: "Kontrak Terverifikasi (BscScan/Sourcify)?",
+        o_exact: "Ya — exact match",
+        o_unchecked2: "Belum dicek",
+        o_no: "Tidak / tidak ditemukan",
+        s_score: "Skor Independen (mis. AirdropBuzz)",
+        o_noscore: "Tidak ada skor",
+        s_market: "Token / Pasar Terverifikasi Ada?",
+        o_market_yes: "Ya — token atau pasar nyata ada",
+        o_market_no: "Tidak — hanya NFT, tanpa pasar",
+        s_community: "Ukuran Komunitas (X/Telegram/Discord)",
+        o_big: "Besar dan aktif",
+        o_mid: "Sedang",
+        o_small: "Kecil / sepi",
+        s_approval: "Yang Diminta Situs",
+        o_normal: "Transaksi normal, nilai jelas",
+        o_unclear: "Belum jelas / belum di-preview",
+        o_unlimited: "Approval tanpa batas atau tanda tangan buta",
+        s_gas: "Perkiraan Gas per Mint",
+        o_paid: "Mint berbayar ≤ $2 total",
+        o_high: "> $2, atau gas ≥ $1 untuk mint gratis",
+        s_upside: "Bukti Upside / Permintaan Beli?",
+        o_upside_yes: "Ya — likuiditas / penjualan nyata",
+        o_upside_no: "Tidak ada bukti — hanya janji proyek",
+        meta_tools: "KALKULATOR BIAYA + RUTINITAS HARIAN",
+        calc_desc:
+          "Hitung dulu sebelum keluar gas. Rel yang dipakai: gas mint gratis < $1, mint berbayar maks $2, total maks $5/hari.",
+        c_gas: "Gas per Transaksi ($)",
+        c_tx: "Transaksi per Hari",
+        c_days: "Hari Farming",
+        c_mint: "Harga Mint Berbayar ($, 0 = gratis)",
+        routine_desc:
+          "Ritme harian yang konsisten mengalahkan ratusan daftar acak. Klik untuk menandai selesai hari ini.",
+        routine_reset_note: "Reset dengan tombol di Radar Deadline",
+        meta_diff: "Kenapa Lebih Baik",
+        meta_add: "MANUAL · TANPA AKUN",
+        f_name: "Nama Proyek *",
+        f_name_ph: "mis. Nullmask",
+        f_chain: "Chain / Ekosistem",
+        f_chain_ph: "mis. BSC, Ethereum, Solana",
+        f_status: "Status",
+        st_farming: "Farming / Kumpul Poin",
+        st_waitlist: "Waitlist",
+        st_snapshot: "Menunggu Snapshot",
+        st_claim: "Siap Klaim",
+        st_owned: "Sudah Dimiliki",
+        st_done: "Selesai",
+        f_deadline: "Deadline",
+        f_link: "Link Resmi",
+        f_link_ph: "https://… (link resmi proyek, bukan link dari DM)",
+        f_tasks: "Tugas (satu per baris)",
+        f_tasks_ph: "Hubungkan wallet\nSwap di testnet\nGabung Discord",
+        f_note: "Catatan",
+        f_note_ph: "mis. gas < $1, skor 70/100, kontrak terverifikasi",
+        meta_decent: "TANPA SERVER · TANPA DATABASE · TANPA AKUN",
+        flow1_t: "1 · Perangkat Kamu",
+        flow1_d:
+          "Tracker berjalan sepenuhnya di browser HP/laptop kamu. Data airdrop kamu ada di memori tab ini — bukan di cloud siapa pun.",
+        flow2_t: "2 · File JSON Kamu",
+        flow2_d:
+          "Export menghasilkan satu file .json yang kamu simpan sendiri (HP, Drive, USB — pilihanmu). Import di perangkat mana pun dan tracker kamu kembali persis seperti semula.",
+        flow3_t: "3 · Dihosting Siapa Saja",
+        flow3_d:
+          "File ini bisa dihosting di GitHub Pages, IPFS, atau laptop kamu sendiri. Jika satu host hilang, salin file ke host lain — aplikasinya berjalan identik.",
+        host_title: "Hosting sendiri (5 menit)",
+        host1:
+          "<b>GitHub Pages:</b> buat repo publik, upload index.html ini, aktifkan Pages di Settings — selesai, gratis.",
+        host2:
+          "<b>IPFS:</b> upload file ke layanan pinning atau IPFS Desktop dan bagikan link ipfs://-nya — tidak ada server pusat tunggal yang bisa menurunkannya.",
+        host3:
+          "<b>Offline:</b> simpan file di HP dan buka di browser — tracker dan formulir tetap berfungsi tanpa internet (snapshot narasi sudah tertanam di dalamnya).",
+        host_note:
+          "Hanya link keluar ke sumber (Binance, AirdropBuzz, situs proyek) yang butuh internet.",
+        oss_title: "Open Source — Lisensi MIT",
+        oss_desc:
+          "Semua kode AgentHunt ada di dalam file ini sendiri: buka View Source di browser dan kamu melihat persis apa yang berjalan — tanpa kode tersembunyi, tanpa pelacak iklan, tanpa analytics. Satu file ringkas tanpa gambar dan tanpa library berat, jadi terbuka seketika bahkan di sinyal lemah. Salin, ubah, dan bagikan bebas di bawah lisensi MIT; rencana publikasi: repo GitHub Billsmokes setelah aplikasinya dicoba.",
+        meta_safety: "ATURAN SCREENING YANG SUDAH DIPAKAI",
+        safe1_t: "Cek dulu, tanda tangan belakangan",
+        safe1_1:
+          "<b>Skor &lt; 65/100</b> (bila skor independen ada) → jangan pernah dilaporkan sebagai “menjanjikan”, apalagi dieksekusi.",
+        safe1_2:
+          "<b>Kontrak wajib terverifikasi</b> terhadap sumber resmi (BscScan/Sourcify) dan dicek di <b>DappBay Red Alarm</b>: jika FLAGGED → NO-GO, tanpa pengecualian.",
+        safe1_3:
+          "<b>Komunitas kecil + tidak ada token/pasar terverifikasi</b> → lewati. “Gratis” saja tidak pernah membenarkan pengeluaran gas.",
+        safe1_4:
+          "<b>Gas &lt; $1</b> untuk mint gratis; jika preview menunjukkan gerakan dana tak terduga atau approval tanpa batas → berhenti.",
+        safe1_5:
+          "Pakai <b>wallet khusus airdrop</b>, jangan wallet utama. Jangan pernah mengetik seed phrase di situs mana pun.",
+        safe2_t: "Jujur soal rumor",
+        safe2_1:
+          "<b>Polymarket:</b> seorang eksekutif pernah menyebut token di podcast (Okt 2025), tetapi pusat bantuan resmi (24 Jun 2026) menyatakan <b>belum ada airdrop atau TGE yang diumumkan</b>. Belajarlah dari sumber resmi, bukan thread X.",
+        safe2_2:
+          "<b>Monad &amp; MegaETH</b> sudah selesai: klaim MON tutup 3 Nov 2025, MEGA live 30 Apr 2026 — jangan “farming” sesuatu yang snapshot-nya sudah lewat.",
+        safe2_3:
+          "Kebanyakan farming berakhir tanpa hasil. Hanya pakai waktu dan uang yang sanggup kamu relakan hilang.",
+        footer_sources: "Sumber data snapshot:",
+        stat_tracked: "Yang Kamu Pantau",
+        stat_tracked_s: "proyek sedang dipantau",
+        stat_tasks: "Tugas Selesai",
+        stat_tasks_s: "dari semua checklist tracker",
+        stat_nextdl: "Deadline Peluang Terdekat",
+        stat_nextdl_from: "dari Peluang",
+        stat_hottest: "Narasi Terpanas",
+        stat_hottest_s: "Volume 24 jam $34.45M · snapshot 8 Nov",
+        focus_title: "⚡ Fokus Hari Ini — Selasa, 10 Nov 2026",
+        f_bagent_k: "🌅 Pagi · 07:01 WIB · FCFS",
+        f_bagent_t: "Klaim Harian BAGENT",
+        f_next_k: "⏳ Deadline Terdekat",
+        f_narr_k: "🔥 Narasi Sedang Panas",
+        f_narr_t: "DeFi & Keuangan, lalu AI",
+        f_narr_s:
+          "Volume 24 jam $34.45M + $28.74M (snapshot 8 Nov). Peluang terkait: Aster, Nullmask, Amadeus.",
+        f_tasks_k: "✅ Tugas Tracker Terbuka",
+        f_rule_k: "🛡️ Aturan Hari Ini",
+        f_rule_t: "Skor < 65 = lewati · Gas < $1",
+        f_rule_s: "Red Alarm FLAGGED = selalu NO-GO. Proyek baru? Jalankan Cek Anti-Scam dulu.",
+        f_backup_k: "💾 Backup",
+        f_backup_t: "Export JSON secara rutin",
+        f_backup_s:
+          "Data hanya hidup di tab ini. Export setelah mengubah tracker dan simpan file-nya di tempat milikmu.",
+        no_upcoming: "Tidak ada deadline mendatang",
+        from_peluang: "Peluang",
+        from_tracker: "Tracker",
+        tasks_word: "tugas",
+        of_word: "dari",
+        projects_word: "proyek di Tracker Saya. Selesaikan yang deadline-nya terdekat dulu.",
+        heat_word: "Panas",
+        done_word: "selesai hari ini",
+        remove_word: "Hapus",
+        official_source: "Sumber resmi ↗",
+        add_to_tracker: "+ Ke Tracker Saya",
+        read_source: "Baca sumber resmi ↗",
+        k_deadline: "Deadline",
+        k_cost: "Biaya Ikut",
+        k_reward: "Hadiah",
+        k_source: "Sumber",
+        pill_active: "Masih Bisa Diikuti",
+        pill_claim: "Klaim / Distribusi",
+        pill_closed: "Tutup / Belum Resmi",
+        score_word: "Skor",
+        no_score: "Belum ada skor",
+        score_hint:
+          "Skor screening independen (mis. AirdropBuzz) — 65 ke atas lolos, ambang yang sama dengan Cek Anti-Scam. Belum ada skor artinya memang belum ada skor independen; tidak pernah dikarang.",
+        filtering: "Menyaring peluang berdasarkan narasi:",
+        already_in: "Sudah ada di tracker kamu: ",
+        added_to: "Ditambahkan ke tracker: ",
+        removed_from: "Dihapus dari tracker: ",
+        added_word: "Ditambahkan: ",
+        export_hint: " — jangan lupa export JSON untuk menyimpannya.",
+        ics_none: "Tidak ada deadline mendatang untuk dimasukkan ke kalender.",
+        ics_done:
+          "agenthunt-deadlines.ics terunduh — buka di kalender HP kamu untuk pengingat H-1.",
+        routine_reset: "Rutinitas harian di-reset untuk hari baru.",
+        export_done: "agenthunt-tracker.json terunduh — simpan di tempat aman milikmu.",
+        copy_done: "JSON tersalin — tempel di mana saja sebagai backup.",
+        copy_fail: "Salin otomatis gagal; gunakan Export JSON.",
+        clipboard_na: "Clipboard tidak tersedia; gunakan Export JSON.",
+        import_ok: "Import berhasil: {n} airdrop dikembalikan ke tracker kamu.",
+        import_bad: "File tidak valid — import dibatalkan, tracker tidak berubah.",
+        empty_tracker_t: "Tracker kosong",
+        empty_tracker_s: "Tambahkan airdrop dari formulir di bawah atau dari daftar peluang.",
+        no_deadline_t: "Tidak ada deadline bertanggal",
+        no_deadline_s: "Tambahkan airdrop dengan tanggal deadline agar muncul di sini.",
+        default_task: "Cek aturan resmi dan kelayakan",
+        dl_prefix: "Deadline ",
+        verdict_go: "✅ GO — Lolos Screening Dasar",
+        verdict_caution: "⚠️ HATI-HATI — Selesaikan Cek Ini Dulu",
+        verdict_nogo: "⛔ NO-GO — Jangan Dieksekusi",
+        verdict_go_body:
+          "Semua rel keamanan terpenuhi: kontrak terverifikasi, Red Alarm bersih, skor ≥ 65, pasar nyata ada, dan biaya dalam rel. Tetap preview sebelum tanda tangan.",
+        verdict_note:
+          "Putusan ini berdasarkan jawabanmu sendiri — cek ulang faktanya di sumber resmi sebelum memutuskan.",
+        calc_total: "Total biaya:",
+        calc_in: "dalam",
+        calc_days: "hari",
+        calc_perday: "Per hari",
+        calc_perweek: "Per minggu",
+        calc_mint: "Mint",
+        calc_within: "✓ Dalam rel anggaran kamu (gas < $1 · mint ≤ $2 · ≤ $5/hari).",
+        calc_remember:
+          "Ingat: kebanyakan farming berakhir tanpa hasil. Biaya ini harus dianggap uang yang sanggup kamu relakan hilang, bukan investasi.",
       });
     </script>
 
@@ -3355,20 +3583,48 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       function daysWord(n) {
         return n + "d";
       }
+      /* Round money inputs to cents — kills float artifacts such as
+         0.05000000074505806 leaking in from stepped number fields. */
+      function round2(v) {
+        return Math.round((+v || 0) * 100) / 100;
+      }
       function countdown(iso) {
         if (!iso) return null;
         var p = iso.split("-");
         var d = new Date(+p[0], +p[1] - 1, +p[2]);
         var days = Math.round((d - TODAY) / 86400000);
-        var en = { past: "{n} days ago", today: "TODAY — deadline!", days: "{n} days left" };
+        var en = {
+          past: "{n} days ago",
+          past1: "1 day ago",
+          today: "TODAY — deadline!",
+          days: "{n} days left",
+          days1: "1 day left",
+        };
         var L10 =
           {
-            id: { past: "{n} hari lalu", today: "HARI INI — deadline!", days: "{n} hari lagi" },
-            ms: { past: "{n} hari lalu", today: "HARI INI — tarikh akhir!", days: "{n} hari lagi" },
+            id: {
+              past: "{n} hari lalu",
+              past1: "1 hari lalu",
+              today: "HARI INI — deadline!",
+              days: "{n} hari lagi",
+              days1: "1 hari lagi",
+            },
+            ms: {
+              past: "{n} hari lalu",
+              past1: "1 hari lalu",
+              today: "HARI INI — tarikh akhir!",
+              days: "{n} hari lagi",
+              days1: "1 hari lagi",
+            },
           }[curLang] || en;
-        if (days < 0) return { txt: L10.past.replace("{n}", Math.abs(days)), cls: "urgent" };
+        if (days < 0)
+          return {
+            txt: days === -1 ? L10.past1 : L10.past.replace("{n}", Math.abs(days)),
+            cls: "urgent",
+          };
         if (days === 0) return { txt: L10.today, cls: "urgent" };
-        if (days <= 7) return { txt: L10.days.replace("{n}", days), cls: "soon" };
+        if (days <= 7)
+          return { txt: days === 1 ? L10.days1 : L10.days.replace("{n}", days), cls: "soon" };
         if (days <= 30) return { txt: L10.days.replace("{n}", days), cls: "" };
         return { txt: L10.days.replace("{n}", days), cls: "ok" };
       }
@@ -3477,7 +3733,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           esc(t("stat_tasks")) +
           '</span><div class="v">' +
           td +
-          '<span style="font-size:15px;color:var(--ink3)"> / ' +
+          ' <span style="font-size:15px;color:var(--ink3)">/ ' +
           ta +
           '</span></div><div class="s">' +
           esc(t("stat_tasks_s")) +
@@ -3554,7 +3810,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
             if (activeNarr) {
               $("filterNote").classList.add("show");
               $("filterText").innerHTML = esc(t("filtering")) + " <b>" + esc(n.name) + "</b>";
-              document.getElementById("peluang").scrollIntoView({ behavior: "smooth" });
+              gotoSection("peluang");
             } else $("filterNote").classList.remove("show");
           });
         });
@@ -3825,7 +4081,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         });
         renderRoutine();
         toast(t("routine_reset"));
-        document.getElementById("alat").scrollIntoView({ behavior: "smooth" });
+        gotoSection("alat");
       });
       /* ================= ANTI-SCAM CHECK: answers -> GO / CAUTION / NO-GO verdict ================= */
       $("scamForm").addEventListener("submit", function (e) {
@@ -3952,10 +4208,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       });
       /* ================= FARMING COST CALCULATOR ================= */
       function renderCalc() {
-        var gas = parseFloat($("cGas").value) || 0,
+        var gas = round2(parseFloat($("cGas").value)),
           tx = parseFloat($("cTx").value) || 0,
           days = parseFloat($("cDays").value) || 0,
-          mint = parseFloat($("cMint").value) || 0;
+          mint = round2(parseFloat($("cMint").value));
         var perDay = gas * tx,
           total = perDay * days + mint;
         var warns = [];
@@ -4016,6 +4272,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       ["cGas", "cTx", "cDays", "cMint"].forEach(function (id) {
         $(id).addEventListener("input", renderCalc);
       });
+      /* Keep the money fields themselves clean: 0.05 stays 0.05. */
+      ["cGas", "cMint"].forEach(function (id) {
+        $(id).addEventListener("change", function () {
+          var v = parseFloat(this.value);
+          if (!isNaN(v)) this.value = round2(v);
+          renderCalc();
+        });
+      });
       var oppFilter = "all",
         onlyScore65 = false,
         oppSort = "default";
@@ -4051,13 +4315,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         $("oppCards").innerHTML = list
           .map(function (o) {
             var c = countdown(o.deadline);
+            /* Every card shows its screening score so visitors can judge for
+               themselves (pass mark 65, same as the Anti-Scam Check). A card
+               with no independent score says so — scores are never invented. */
             var score = o.score
               ? '<div class="score' +
                 (o.score < 65 ? " low" : "") +
+                '" title="' +
+                esc(t("score_hint")) +
                 '"><b>' +
                 o.score +
-                "</b><span>/ 100</span></div>"
-              : "";
+                "</b><span>" +
+                esc(t("score_word")) +
+                " / 100</span></div>"
+              : '<div class="score none" title="' +
+                esc(t("score_hint")) +
+                '"><b>—</b><span>' +
+                esc(t("no_score")) +
+                "</span></div>";
+            /* The grey pill repeats the status pill when the label is the
+               same (e.g. "Still Joinable") — show it only when it adds info. */
+            var pillText = {
+              aktif: "Still Joinable",
+              klaim: "Claim / Distribution",
+              tutup: "Closed / Not Official",
+            };
+            var labelPill =
+              o.statusLabel && o.statusLabel !== pillText[o.status]
+                ? '<span class="pill grey">' + esc(o.statusLabel) + "</span>"
+                : "";
             return (
               '<article class="card"><div class="card-top"><div><h3>' +
               esc(o.name) +
@@ -4067,9 +4353,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
               score +
               "</div>" +
               pillFor(o.status) +
-              '<span class="pill grey">' +
-              esc(o.statusLabel) +
-              "</span>" +
+              labelPill +
               '<p class="desc">' +
               esc(o.desc) +
               "</p>" +
@@ -4154,7 +4438,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
             renderTracker();
             renderStats();
             toast(t("added_to") + o.name);
-            document.getElementById("tracker").scrollIntoView({ behavior: "smooth" });
+            gotoSection("tracker");
           });
         });
       }
@@ -4182,8 +4466,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       document.addEventListener("keydown", function (e) {
         if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
           e.preventDefault();
+          gotoSection("peluang");
           $("searchOpp").focus();
-          document.getElementById("peluang").scrollIntoView({ behavior: "smooth" });
         }
       });
       /* ================= RENDER: MY TRACKER ================= */
@@ -4329,7 +4613,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         renderTracker();
         renderStats();
         toast(t("added_word") + name + t("export_hint"));
-        document.getElementById("tracker").scrollIntoView({ behavior: "smooth" });
+        gotoSection("tracker");
       });
       /* ================= TRACKER DATA: EXPORT / COPY / IMPORT (JSON file) ================= */
       function trackerJSON() {
@@ -4393,14 +4677,55 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         };
         r.readAsText(f);
       });
-      /* ================= NAV TABS: highlight the tapped tab ================= */
-      var tabLinks = document.querySelectorAll("#tabs a");
-      tabLinks.forEach(function (a) {
-        a.addEventListener("click", function () {
-          tabLinks.forEach(function (x) {
-            x.classList.remove("on");
-          });
-          this.classList.add("on");
+      /* ================= TAB MENU: one panel visible at a time ================= */
+      var TAB_OF_SECTION = {
+        fokus: "today",
+        radar: "today",
+        tracker: "tracker",
+        tambah: "tracker",
+        narasi: "opp",
+        peluang: "opp",
+        cek: "check",
+        alat: "tools",
+        banding: "about",
+        desentral: "about",
+        kaamanan: "about",
+      };
+      var TAB_FIRST = {
+        today: "fokus",
+        tracker: "tracker",
+        opp: "narasi",
+        check: "cek",
+        tools: "alat",
+        about: "banding",
+      };
+      function showTab(name, scroll) {
+        document.querySelectorAll("section[data-panel]").forEach(function (s) {
+          s.classList.toggle("on", s.getAttribute("data-panel") === name);
+        });
+        document.querySelectorAll("#tabs .tab").forEach(function (b) {
+          var on = b.getAttribute("data-tab") === name;
+          b.classList.toggle("on", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        if (window.history && history.replaceState)
+          history.replaceState(null, "", "#" + (TAB_FIRST[name] || "fokus"));
+        if (scroll) {
+          var first = document.querySelector('section[data-panel="' + name + '"].on');
+          if (first) first.scrollIntoView();
+        }
+      }
+      /* Jump to a section that may live in another tab: open its tab first. */
+      function gotoSection(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var tab = TAB_OF_SECTION[id];
+        if (tab) showTab(tab, false);
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+      document.querySelectorAll("#tabs .tab").forEach(function (b) {
+        b.addEventListener("click", function () {
+          showTab(this.getAttribute("data-tab"), true);
         });
       });
       /* ================= LANGUAGE PICKER + FIRST RENDER ================= */
@@ -4413,6 +4738,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         curLang = this.value;
         applyLang();
       });
+      /* Open the tab named by the URL hash (e.g. #tracker), else Today's Focus. */
+      showTab(TAB_OF_SECTION[(location.hash || "").replace("#", "")] || "today", false);
       renderAll();
     </script>
   </body>
