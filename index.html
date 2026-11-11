@@ -45,20 +45,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:," />
     <title>AgentHunt — Airdrop Tracker</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      /*
-        AgentHunt styles.
-        - Theme colors are CSS variables on :root; the dark theme only
-          overrides the variables inside the prefers-color-scheme block.
-        - Below that: base elements, then one block per component in the
-          same order the components appear on the page.
-      */
       :root {
         --bg: #f4f4ef;
         --surface: #ffffff;
@@ -70,7 +57,6 @@
         --line2: #c6c6b6;
         --green: #15803d;
         --green-bg: #dcfce7;
-        --lime: #65a30d;
         --amber: #b45309;
         --amber-bg: #fef3c7;
         --red: #b91c1c;
@@ -79,8 +65,9 @@
         --blue-bg: #dbeafe;
         --chip: #16181d;
         --chip-ink: #f4f4ef;
-        --heat: #ea580c;
-        --radius: 10px;
+        --faccent: #4ade80;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --radius: 12px;
       }
       @media (prefers-color-scheme: dark) {
         :root {
@@ -94,7 +81,6 @@
           --line2: #3a3e40;
           --green: #4ade80;
           --green-bg: #14301f;
-          --lime: #a3e635;
           --amber: #fbbf24;
           --amber-bg: #33270e;
           --red: #f87171;
@@ -103,98 +89,64 @@
           --blue-bg: #16283f;
           --chip: #eceee6;
           --chip-ink: #101214;
-          --heat: #fb923c;
+          --faccent: #15803d;
         }
       }
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
         background: var(--bg);
         color: var(--ink);
-        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         font-size: 15px;
-        line-height: 1.55;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
       }
-      .mono {
-        font-family: "IBM Plex Mono", ui-monospace, monospace;
+      .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      button { font-family: inherit; cursor: pointer; }
+      :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid var(--green);
+        outline-offset: 2px;
       }
-      a {
-        color: var(--blue);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-      }
+      .focus :focus-visible { outline-color: var(--faccent); }
+      @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
       .wrap {
         max-width: 1120px;
         margin: 0 auto;
-        padding: 0 16px 64px;
+        padding: 0 20px 80px;
+        animation: rise 450ms var(--ease) both;
       }
-
-      /* top strip */
-      .topstrip {
-        border-bottom: 2px solid var(--ink);
-        background: var(--surface);
-      }
+      .topstrip { border-bottom: 1px solid var(--ink); background: var(--surface); }
       .topstrip-in {
         max-width: 1120px;
         margin: 0 auto;
-        padding: 18px 16px 14px;
+        padding: 20px 20px 16px;
         display: flex;
         flex-wrap: wrap;
-        gap: 14px;
+        gap: 16px;
         align-items: flex-end;
         justify-content: space-between;
       }
-      .topstrip h1 {
-        font-size: 26px;
-        line-height: 1.1;
-        margin: 0;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      .topstrip h1 span {
-        color: var(--green);
-      }
-      .topstrip p {
-        margin: 6px 0 0;
-        color: var(--ink2);
-        font-size: 13.5px;
-        max-width: 560px;
-      }
+      .topstrip h1 { font-size: 30px; line-height: 1.1; margin: 0; font-weight: 600; letter-spacing: -0.02em; }
+      .topstrip h1 span { color: var(--green); }
+      .topstrip p { margin: 6px 0 0; color: var(--ink2); font-size: 15px; line-height: 1.6; max-width: 600px; }
       .badges {
         display: flex;
-        gap: 8px;
+        gap: 0;
         flex-wrap: wrap;
+        align-items: baseline;
+        margin-bottom: 12px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.01em;
+        color: var(--ink2);
       }
-      .badge {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        border: 1.5px solid var(--ink);
-        padding: 5px 9px;
-        border-radius: 999px;
-        background: var(--bg);
-      }
-      .badge.solid {
-        background: var(--chip);
-        color: var(--chip-ink);
-      }
-
-      /* Tab menu — every tab is always visible: the bar wraps onto a
-         second row instead of scrolling sideways and hiding links. */
+      .badge { color: var(--ink2); }
+      .badge:first-child { color: var(--ink); }
+      .badge + .badge::before { content: "·"; margin: 0 8px; color: var(--ink3); }
       nav.tabs {
         position: sticky;
         top: 0;
@@ -203,115 +155,60 @@
         border-bottom: 1px solid var(--line);
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
-        padding: 10px 0;
+        gap: 8px;
+        padding: 12px 0;
       }
       nav.tabs .tab {
         border: 1px solid var(--line2);
         background: var(--surface);
         color: var(--ink2);
-        border-radius: 999px;
-        padding: 8px 14px;
+        border-radius: 8px;
+        padding: 9px 14px;
         font-size: 13.5px;
         font-weight: 600;
+        transition: background-color .15s var(--ease), border-color .15s var(--ease), transform .15s var(--ease);
       }
-      nav.tabs .tab:hover {
-        color: var(--ink);
-        border-color: var(--ink3);
-      }
-      nav.tabs .tab.on {
-        background: var(--chip);
-        color: var(--chip-ink);
-        border-color: var(--chip);
-      }
-
-      /* Tab panels — only the active tab's sections are shown, so the
-         page is one short screen instead of one very long scroll. */
-      section[data-panel] {
-        display: none;
-      }
-      section[data-panel].on {
-        display: block;
-      }
-      /* Headings land fully visible below the sticky tab bar. */
-      section {
-        scroll-margin-top: 78px;
-      }
+      nav.tabs .tab:hover { color: var(--ink); border-color: var(--ink3); background: var(--surface2); }
+      nav.tabs .tab:active { transform: scale(0.98); }
+      nav.tabs .tab.on { background: var(--chip); color: var(--chip-ink); border-color: var(--chip); }
+      section[data-panel] { display: none; }
+      section[data-panel].on { display: block; }
+      section { scroll-margin-top: 78px; margin-top: 48px; }
+      #fokus { margin-top: 24px; }
       @media (max-width: 640px) {
-        section {
-          scroll-margin-top: 122px;
-        }
+        section { scroll-margin-top: 122px; }
+        .wrap { padding: 0 16px 80px; }
       }
-
-      /* stats */
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin: 18px 0 6px;
-      }
-      .stat {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 14px 16px;
-      }
+      .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0 0; }
+      .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
       .stat .k {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.01em;
         color: var(--ink3);
       }
-      .stat .v {
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1.15;
-        margin-top: 4px;
-        letter-spacing: -0.01em;
-      }
-      .stat .s {
-        font-size: 12.5px;
-        color: var(--ink2);
-        margin-top: 2px;
-      }
-
-      section {
-        margin-top: 34px;
-      }
+      .stat .v { font-size: 28px; font-weight: 500; line-height: 1.15; margin-top: 4px; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+      .stat .s { font-size: 12.5px; color: var(--ink2); margin-top: 2px; }
+      .stat-total { font-size: 15px; color: var(--ink3); }
       .sec-head {
         display: flex;
         align-items: baseline;
         justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
-        border-bottom: 2px solid var(--ink);
-        padding-bottom: 8px;
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 12px;
         margin-bottom: 6px;
       }
-      .sec-head h2 {
-        font-size: 20px;
-        margin: 0;
-        letter-spacing: -0.01em;
-      }
+      .sec-head h2 { font-size: 22px; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
       .sec-head .meta {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11.5px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0;
         color: var(--ink3);
       }
-      .sec-sub {
-        color: var(--ink2);
-        font-size: 13.5px;
-        margin: 8px 0 16px;
-        max-width: 720px;
-      }
-
-      /* narratives */
-      .narr-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-      }
+      .sec-sub { color: var(--ink2); font-size: 13.5px; margin: 8px 0 16px; max-width: 720px; }
+      .narr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
       .narr {
         background: var(--surface);
         border: 1px solid var(--line);
@@ -320,74 +217,38 @@
         text-align: left;
         width: 100%;
         color: var(--ink);
-        transition: border-color 0.15s;
+        transition: background-color .15s var(--ease), border-color .15s var(--ease);
       }
-      .narr:hover {
-        border-color: var(--line2);
-      }
-      .narr.sel {
-        border: 2px solid var(--green);
-        padding: 15px;
-      }
+      .narr:hover { border-color: var(--line2); background: var(--surface2); }
+      .narr.sel { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); padding: 16px; }
       .narr .rank {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
         color: var(--ink3);
-        letter-spacing: 0.05em;
+        letter-spacing: 0;
       }
-      .narr h3 {
-        margin: 4px 0 6px;
-        font-size: 16.5px;
-        line-height: 1.25;
-      }
-      .narr p {
-        margin: 0;
-        font-size: 13px;
-        color: var(--ink2);
-      }
-      .heat {
-        height: 8px;
-        background: var(--surface2);
-        border-radius: 99px;
-        margin: 12px 0 6px;
-        overflow: hidden;
-      }
-      .heat i {
-        display: block;
-        height: 100%;
-        background: var(--heat);
-        border-radius: 99px;
-      }
+      .narr h3 { margin: 4px 0 6px; font-size: 17px; font-weight: 600; line-height: 1.25; }
+      .narr p { margin: 0; font-size: 13px; color: var(--ink2); }
+      .heat { height: 8px; background: var(--surface2); border-radius: 4px; margin: 12px 0 6px; overflow: hidden; }
+      .heat i { display: block; height: 100%; background: var(--ink); border-radius: 4px; }
       .heat-row {
         display: flex;
         justify-content: space-between;
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
         color: var(--ink3);
       }
-      .heat-row b {
-        color: var(--ink);
-        font-weight: 600;
-      }
-      .leaders {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        margin-top: 10px;
-      }
+      .heat-row b { color: var(--ink); font-weight: 600; }
+      .leaders { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
       .leaders span {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
         background: var(--surface2);
         border: 1px solid var(--line);
         padding: 2px 7px;
-        border-radius: 99px;
+        border-radius: 6px;
       }
-      .src {
-        font-size: 11.5px;
-        color: var(--ink3);
-        margin-top: 10px;
-      }
+      .src { font-size: 11.5px; color: var(--ink3); margin-top: 10px; }
       .filter-note {
         display: none;
         background: var(--green-bg);
@@ -400,26 +261,9 @@
         gap: 10px;
         flex-wrap: wrap;
       }
-      .filter-note.show {
-        display: flex;
-      }
-      .filter-note button {
-        background: var(--ink);
-        color: var(--bg);
-        border: 0;
-        border-radius: 6px;
-        padding: 5px 10px;
-        font-size: 12.5px;
-        font-weight: 600;
-      }
-
-      /* opportunities + tracker cards */
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin: 14px 0;
-      }
+      .filter-note.show { display: flex; }
+      .filter-note button { background: var(--ink); color: var(--bg); border: 0; border-radius: 6px; padding: 5px 10px; font-size: 12.5px; font-weight: 600; }
+      .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
       .toolbar input[type="search"] {
         flex: 1;
         min-width: 180px;
@@ -435,182 +279,95 @@
         border: 1px solid var(--line2);
         background: var(--surface);
         color: var(--ink2);
-        border-radius: 999px;
+        border-radius: 8px;
         padding: 8px 13px;
         font-size: 13px;
         font-weight: 600;
+        transition: background-color .15s var(--ease), border-color .15s var(--ease), transform .15s var(--ease);
       }
-      .fbtn.on {
-        background: var(--chip);
-        color: var(--chip-ink);
-        border-color: var(--chip);
-      }
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 16px;
-      }
-      .card-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: flex-start;
-      }
-      .card h3 {
-        margin: 0;
-        font-size: 16.5px;
-        line-height: 1.25;
-      }
-      .card h3 a {
-        color: var(--ink);
-      }
+      .fbtn:hover { background: var(--surface2); color: var(--ink); }
+      .fbtn:active { transform: scale(0.98); }
+      .fbtn.on { background: var(--chip); color: var(--chip-ink); border-color: var(--chip); }
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+      .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+      .card-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+      .card h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.25; }
+      .card h3 a { color: var(--ink); }
       .chain {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
         color: var(--ink3);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0;
         margin-top: 2px;
       }
-      .score {
-        flex: none;
-        text-align: center;
-        border: 1.5px solid var(--ink);
-        border-radius: 8px;
-        padding: 4px 8px;
-        line-height: 1;
-      }
-      .score b {
-        font-size: 17px;
-        display: block;
-      }
+      .score { flex: none; text-align: center; border: 1px solid var(--ink); border-radius: 8px; padding: 4px 8px; line-height: 1; }
+      .score b { font-size: 17px; display: block; font-variant-numeric: tabular-nums; }
       .score span {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 9.5px;
-        color: var(--ink3);
-        text-transform: uppercase;
-      }
-      .score.low {
-        border-color: var(--amber);
-        color: var(--amber);
-      }
-      .score.none {
-        border-style: dashed;
-        border-color: var(--line2);
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0;
         color: var(--ink3);
       }
-      .pill {
-        display: inline-block;
-        font-size: 11.5px;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: 99px;
-        margin: 10px 6px 0 0;
-      }
-      .pill.green {
-        background: var(--green-bg);
-        color: var(--green);
-      }
-      .pill.amber {
-        background: var(--amber-bg);
-        color: var(--amber);
-      }
-      .pill.red {
-        background: var(--red-bg);
-        color: var(--red);
-      }
-      .pill.blue {
-        background: var(--blue-bg);
-        color: var(--blue);
-      }
-      .pill.grey {
-        background: var(--surface2);
-        color: var(--ink2);
-      }
-      .card .desc {
-        font-size: 13.5px;
-        color: var(--ink2);
-        margin: 10px 0 0;
-      }
-      .kv {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px 14px;
-        margin-top: 12px;
-        border-top: 1px dashed var(--line);
-        padding-top: 12px;
-      }
+      .score.low { border-color: var(--amber); color: var(--amber); }
+      .score.none { border-style: dashed; border-color: var(--line2); color: var(--ink3); }
+      .pill { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; margin: 10px 6px 0 0; }
+      .pill.green { background: var(--green-bg); color: var(--green); }
+      .pill.amber { background: var(--amber-bg); color: var(--amber); }
+      .pill.red { background: var(--red-bg); color: var(--red); }
+      .pill.blue { background: var(--blue-bg); color: var(--blue); }
+      .pill.grey { background: var(--surface2); color: var(--ink2); }
+      .card .desc { font-size: 13.5px; color: var(--ink2); margin: 10px 0 0; }
+      .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 12px; }
       .kv div .k {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 10.5px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0;
         color: var(--ink3);
         display: block;
       }
-      .kv div .val {
-        font-size: 13.5px;
-        font-weight: 600;
-      }
-      .card .foot {
-        margin-top: 12px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
+      .kv div .val { font-size: 13.5px; font-weight: 600; }
+      .card .foot { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
       .btn {
-        border: 1.5px solid var(--ink);
+        border: 1px solid var(--ink);
         background: var(--surface);
         color: var(--ink);
         border-radius: 8px;
-        padding: 8px 13px;
+        padding: 10px 16px;
         font-size: 13px;
-        font-weight: 700;
+        font-weight: 600;
+        transition: background-color .15s var(--ease), border-color .15s var(--ease), transform .15s var(--ease);
       }
-      .btn.primary {
-        background: var(--ink);
-        color: var(--bg);
-      }
-      .btn.small {
-        padding: 6px 10px;
-        font-size: 12.5px;
-      }
-      .btn.danger {
-        border-color: var(--red);
-        color: var(--red);
-      }
+      .btn:hover { background: var(--surface2); }
+      .btn:active { transform: scale(0.98); }
+      .btn.primary { background: var(--ink); color: var(--bg); }
+      .btn.primary:hover { background: var(--ink2); }
+      .btn.small { padding: 6px 10px; font-size: 12.5px; }
+      .btn.danger { border-color: var(--red); color: var(--red); }
+      .btn .ic { vertical-align: -3px; margin-right: 6px; }
       .count {
-        font-family: "IBM Plex Mono", monospace;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
         font-size: 12px;
         font-weight: 600;
+        color: var(--ink2);
+        font-variant-numeric: tabular-nums;
       }
-      .count.urgent {
-        color: var(--red);
+      .count.past { color: var(--red); }
+      .stamp {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
+        border: 1px solid var(--line2);
+        border-radius: 4px;
+        padding: 3px 8px;
+        color: var(--ink2);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        display: inline-block;
+        margin-top: 3px;
       }
-      .count.soon {
-        color: var(--amber);
-      }
-      .count.ok {
-        color: var(--green);
-      }
-
-      /* tracker */
-      .tasks {
-        list-style: none;
-        margin: 12px 0 0;
-        padding: 0;
-        border-top: 1px dashed var(--line);
-      }
-      .tasks li {
-        border-bottom: 1px dashed var(--line);
-      }
+      .stamp.past { border-color: var(--red); color: var(--red); }
+      .stamp.soon { border-color: var(--amber); color: var(--amber); }
+      .tasks { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px dashed var(--line); }
+      .tasks li { border-bottom: 1px dashed var(--line); }
       .tasks button {
         width: 100%;
         display: flex;
@@ -627,84 +384,41 @@
         flex: none;
         width: 19px;
         height: 19px;
-        border: 1.5px solid var(--ink2);
-        border-radius: 5px;
+        border: 1px solid var(--ink2);
+        border-radius: 4px;
         margin-top: 1px;
         display: grid;
         place-items: center;
         font-size: 12px;
         color: transparent;
       }
-      .tasks li.done button {
-        color: var(--ink3);
-      }
-      .tasks li.done .t {
-        text-decoration: line-through;
-      }
-      .tasks li.done .box {
-        background: var(--green);
-        border-color: var(--green);
-        color: #fff;
-      }
-      .prog {
-        height: 7px;
-        background: var(--surface2);
-        border-radius: 99px;
-        overflow: hidden;
-        margin-top: 12px;
-      }
-      .prog i {
-        display: block;
-        height: 100%;
-        background: var(--green);
-      }
+      .tasks li.done button { color: var(--ink3); }
+      .tasks li.done .t { text-decoration: line-through; }
+      .tasks li.done .box { background: var(--green); border-color: var(--green); color: #fff; }
+      .prog { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+      .prog i { display: block; height: 100%; background: var(--green); }
       .prog-row {
         display: flex;
         justify-content: space-between;
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
         color: var(--ink3);
         margin-top: 5px;
       }
-      .empty {
-        border: 1.5px dashed var(--line2);
-        border-radius: var(--radius);
-        padding: 28px 18px;
-        text-align: center;
-        color: var(--ink2);
-        background: var(--surface);
-      }
-      .empty b {
-        color: var(--ink);
-        display: block;
-        font-size: 15px;
-        margin-bottom: 4px;
-      }
-
-      /* forms */
-      .panel {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 18px;
-      }
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
+      .empty { border: 1px dashed var(--line2); border-radius: 12px; padding: 28px 18px; text-align: center; color: var(--ink2); background: var(--surface); }
+      .empty b { color: var(--ink); display: block; font-size: 15px; margin-bottom: 4px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .calc-grid { margin-top: 12px; }
       .field label {
         display: block;
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0;
         color: var(--ink3);
         margin-bottom: 5px;
       }
-      .field input,
-      .field select,
-      .field textarea {
+      .field input, .field select, .field textarea {
         width: 100%;
         padding: 10px 11px;
         border: 1px solid var(--line2);
@@ -714,77 +428,31 @@
         font-size: 14px;
         font-family: inherit;
       }
-      .field.full {
-        grid-column: 1/-1;
-      }
-      .form-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 14px;
-      }
-
-      /* decentral */
-      .flow {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr auto 1fr;
-        gap: 10px;
-        align-items: stretch;
-        margin: 16px 0;
-      }
-      .flow .node {
-        background: var(--surface);
-        border: 1.5px solid var(--ink);
-        border-radius: var(--radius);
-        padding: 14px;
-      }
-      .flow .node h4 {
-        margin: 0 0 5px;
-        font-size: 14.5px;
-      }
-      .flow .node p {
-        margin: 0;
-        font-size: 12.5px;
-        color: var(--ink2);
-      }
+      .field.full { grid-column: 1/-1; }
+      .form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+      .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: stretch; margin: 16px 0; }
+      .flow .node { background: var(--surface); border: 1px solid var(--ink); border-radius: var(--radius); padding: 14px; }
+      .flow .node h4 { margin: 0 0 5px; font-size: 14.5px; font-weight: 600; }
+      .flow .node p { margin: 0; font-size: 12.5px; color: var(--ink2); }
       .flow .arrow {
         display: grid;
         place-items: center;
         font-size: 20px;
         color: var(--ink3);
-        font-family: "IBM Plex Mono", monospace;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       }
-      .two {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .panel h3 {
-        margin: 0 0 8px;
-        font-size: 16px;
-      }
-      .panel p,
-      .panel li {
-        font-size: 13.5px;
-        color: var(--ink2);
-      }
-      .panel ul {
-        margin: 8px 0 0;
-        padding-left: 18px;
-      }
-      .panel li {
-        margin: 5px 0;
-      }
-      .panel li b,
-      .panel p b {
-        color: var(--ink);
-      }
+      .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .panel h3 { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+      .panel p, .panel li { font-size: 13.5px; color: var(--ink2); }
+      .panel ul { margin: 8px 0 0; padding-left: 18px; }
+      .panel li { margin: 5px 0; }
+      .panel li b, .panel p b { color: var(--ink); }
       pre.license {
         background: var(--surface2);
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 12px;
-        font-family: "IBM Plex Mono", monospace;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
         font-size: 11.5px;
         white-space: pre-wrap;
         color: var(--ink2);
@@ -792,17 +460,10 @@
         max-height: 170px;
         overflow: auto;
       }
-      .io-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-      }
-      .note {
-        font-size: 12.5px;
-        color: var(--ink3);
-        margin-top: 10px;
-      }
+      .io-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .io-tracker { margin: 0 0 16px; }
+      #routineList { margin-top: 12px; }
+      .note { font-size: 12.5px; color: var(--ink3); margin-top: 10px; }
       .toast {
         position: fixed;
         left: 50%;
@@ -815,220 +476,87 @@
         font-size: 14px;
         font-weight: 600;
         z-index: 50;
-        transition: transform 0.25s;
+        transition: transform .25s var(--ease);
         max-width: 92vw;
         text-align: center;
       }
-      .toast.show {
-        transform: translateX(-50%) translateY(0);
-      }
-      footer {
-        margin-top: 44px;
-        border-top: 1px solid var(--line);
-        padding-top: 16px;
-        font-size: 12.5px;
-        color: var(--ink3);
-      }
-      footer a {
-        color: var(--ink2);
-      }
-
+      .toast.show { transform: translateX(-50%) translateY(0); }
+      footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 16px; font-size: 12.5px; color: var(--ink3); }
+      footer a { color: var(--ink2); }
       @media (max-width: 860px) {
-        .narr-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .cards {
-          grid-template-columns: 1fr;
-        }
-        .stats {
-          grid-template-columns: 1fr 1fr;
-        }
-        .two {
-          grid-template-columns: 1fr;
-        }
-        .flow {
-          grid-template-columns: 1fr;
-        }
-        .flow .arrow {
-          transform: rotate(90deg);
-          padding: 2px 0;
-        }
+        .stats { grid-template-columns: 1fr 1fr; }
+        .two { grid-template-columns: 1fr; }
+        .flow { grid-template-columns: 1fr; }
+        .flow .arrow { transform: rotate(90deg); padding: 2px 0; }
       }
       @media (max-width: 520px) {
-        .narr-grid {
-          grid-template-columns: 1fr;
-        }
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
-        .topstrip h1 {
-          font-size: 23px;
-        }
-        .kv {
-          grid-template-columns: 1fr 1fr;
-        }
+        .narr-grid { grid-template-columns: 1fr; }
+        .form-grid { grid-template-columns: 1fr; }
+        .topstrip h1 { font-size: 24px; }
+        .kv { grid-template-columns: 1fr 1fr; }
       }
-      /* focus today */
       .focus {
         background: var(--ink);
         color: var(--bg);
-        border-radius: 14px;
-        padding: 20px;
+        border-radius: 20px;
+        padding: 32px;
         margin-top: 18px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
       }
-      .focus h2 {
-        margin: 0;
-        font-size: 19px;
-        letter-spacing: -0.01em;
+      @media (prefers-color-scheme: dark) {
+        .focus { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6); }
       }
-      .focus .fsub {
-        opacity: 0.75;
-        font-size: 13px;
-        margin: 4px 0 14px;
-      }
-      .focus-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-      .fitem {
-        background: rgba(127, 127, 127, 0.16);
-        border: 1px solid rgba(127, 127, 127, 0.35);
-        border-radius: 10px;
-        padding: 13px 14px;
-      }
+      .focus h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+      .focus .fsub { opacity: 0.75; font-size: 13px; margin: 4px 0 14px; }
+      .focus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .fitem { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 16px; }
       .fitem .fk {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 10.5px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.01em;
         opacity: 0.7;
-      }
-      .fitem .fv {
-        font-weight: 700;
-        font-size: 15px;
-        margin-top: 3px;
-        line-height: 1.35;
-      }
-      .fitem .fs {
-        font-size: 12.5px;
-        opacity: 0.8;
-        margin-top: 2px;
-      }
-      .fitem.hot {
-        border-color: var(--heat);
-      }
-      /* radar */
-      .radar {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        overflow: hidden;
-      }
-      .radar li {
         display: flex;
-        gap: 12px;
         align-items: center;
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--line);
+        gap: 6px;
       }
-      .radar li:last-child {
-        border-bottom: 0;
-      }
-      .radar .dot {
-        flex: none;
-        width: 11px;
-        height: 11px;
-        border-radius: 99px;
-        background: var(--green);
-      }
-      .radar .dot.soon {
-        background: var(--amber);
-      }
-      .radar .dot.urgent {
-        background: var(--red);
-      }
-      .radar .dot.past {
-        background: var(--ink3);
-      }
-      .radar .rmain {
-        flex: 1;
-        min-width: 0;
-      }
-      .radar .rmain b {
-        font-size: 14.5px;
-      }
-      .radar .rmain span {
-        display: block;
-        font-size: 12.5px;
-        color: var(--ink2);
-      }
-      .radar .rwhen {
-        text-align: right;
-        flex: none;
-      }
+      .fk-ic { display: inline-flex; flex: none; opacity: 0.75; }
+      .fk-ic svg { width: 14px; height: 14px; display: block; }
+      .fitem .fv { font-weight: 600; font-size: 15px; margin-top: 3px; line-height: 1.35; }
+      .fitem .fs { font-size: 12.5px; opacity: 0.8; margin-top: 2px; }
+      .fitem.hot { border-color: var(--faccent); }
+      .radar { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+      .radar li { display: flex; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+      .radar li:last-child { border-bottom: 0; }
+      .radar .dot { flex: none; width: 11px; height: 11px; border-radius: 99px; background: var(--green); }
+      .radar .dot.soon { background: var(--amber); }
+      .radar .dot.urgent { background: var(--red); }
+      .radar .dot.past { background: var(--ink3); }
+      .radar .rmain { flex: 1; min-width: 0; }
+      .radar .rmain b { font-size: 14.5px; }
+      .radar .rmain span { display: block; font-size: 12.5px; color: var(--ink2); }
+      .radar .rwhen { text-align: right; flex: none; }
       .radar .rwhen b {
-        font-family: "IBM Plex Mono", monospace;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
         font-size: 13px;
         display: block;
+        font-variant-numeric: tabular-nums;
       }
-      /* verdict */
-      .verdict {
-        border-radius: 10px;
-        padding: 16px;
-        margin-top: 14px;
-        display: none;
-      }
-      .verdict.show {
-        display: block;
-      }
-      .verdict.go {
-        background: var(--green-bg);
-        border: 1.5px solid var(--green);
-      }
-      .verdict.caution {
-        background: var(--amber-bg);
-        border: 1.5px solid var(--amber);
-      }
-      .verdict.nogo {
-        background: var(--red-bg);
-        border: 1.5px solid var(--red);
-      }
-      .verdict h4 {
-        margin: 0 0 6px;
-        font-size: 17px;
-      }
-      .verdict ul {
-        margin: 6px 0 0;
-        padding-left: 18px;
-        font-size: 13.5px;
-      }
-      .calc-out {
-        background: var(--surface2);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .calc-out b {
-        font-size: 19px;
-      }
-      /* routine */
-      .routine {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .routine li {
-        border-bottom: 1px dashed var(--line);
-      }
-      .routine li:last-child {
-        border-bottom: 0;
-      }
+      .verdict { border-radius: 12px; padding: 16px; margin-top: 14px; display: none; }
+      .verdict.show { display: block; }
+      .verdict.go { background: var(--green-bg); border: 1px solid var(--green); }
+      .verdict.caution { background: var(--amber-bg); border: 1px solid var(--amber); }
+      .verdict.nogo { background: var(--red-bg); border: 1px solid var(--red); }
+      .verdict h4 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
+      .v-ic { display: inline-flex; vertical-align: -3px; margin-right: 8px; }
+      .v-ic svg { width: 18px; height: 18px; display: block; }
+      .w-ic { display: inline-flex; vertical-align: -3px; margin-right: 4px; }
+      .w-ic svg { width: 16px; height: 16px; display: block; }
+      .verdict ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; }
+      .calc-out { background: var(--surface2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-top: 12px; font-size: 14px; }
+      .calc-out b { font-size: 19px; font-variant-numeric: tabular-nums; }
+      .routine { list-style: none; margin: 0; padding: 0; }
+      .routine li { border-bottom: 1px dashed var(--line); }
+      .routine li:last-child { border-bottom: 0; }
       .routine button {
         width: 100%;
         display: flex;
@@ -1041,55 +569,23 @@
         padding: 10px 2px;
         font-size: 13.5px;
       }
-      .routine li.done button {
-        color: var(--ink3);
-      }
-      .routine li.done .t {
-        text-decoration: line-through;
-      }
-      .routine li.done .box {
-        background: var(--green);
-        border-color: var(--green);
-        color: #fff;
-      }
+      .routine li.done button { color: var(--ink3); }
+      .routine li.done .t { text-decoration: line-through; }
+      .routine li.done .box { background: var(--green); border-color: var(--green); color: #fff; }
       .routine .rtime {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 11.5px;
         color: var(--ink3);
         flex: none;
         margin-top: 3px;
         min-width: 44px;
       }
-      /* compare */
-      .cmp {
-        display: grid;
-        grid-template-columns: 1.1fr 1fr 1fr;
-        gap: 0;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        overflow: hidden;
-      }
-      .cmp > div {
-        padding: 13px 16px;
-        border-bottom: 1px solid var(--line);
-        font-size: 13.5px;
-      }
-      .cmp .h {
-        font-weight: 700;
-        background: var(--surface2);
-        font-size: 13px;
-      }
-      .cmp .us {
-        font-weight: 600;
-      }
-      .cmp .rowk {
-        color: var(--ink2);
-        font-weight: 600;
-      }
-      .cmp > div:nth-last-child(-n + 3) {
-        border-bottom: 0;
-      }
+      .cmp { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+      .cmp > div { padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+      .cmp .h { font-weight: 600; background: var(--surface2); font-size: 13px; }
+      .cmp .us { font-weight: 600; }
+      .cmp .rowk { color: var(--ink2); font-weight: 600; }
+      .cmp > div:nth-last-child(-n + 3) { border-bottom: 0; }
       select.sortsel {
         padding: 9px 10px;
         border: 1px solid var(--line2);
@@ -1101,31 +597,20 @@
         font-weight: 600;
       }
       @media (max-width: 860px) {
-        .focus-grid {
-          grid-template-columns: 1fr;
-        }
-        .cmp {
-          grid-template-columns: 1fr;
-        }
-        .cmp > div {
-          border-bottom: 1px solid var(--line);
-        }
-        .cmp .rowk {
-          background: var(--surface2);
-        }
+        .focus-grid { grid-template-columns: 1fr; }
+        .cmp { grid-template-columns: 1fr; }
+        .cmp > div { border-bottom: 1px solid var(--line); }
+        .cmp .rowk { background: var(--surface2); }
       }
       @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        .toast {
-          transition: none;
-        }
+        html { scroll-behavior: auto; }
+        .toast { transition: none; }
+        *, *::before, *::after { transition: none !important; animation: none !important; }
+        .wrap { animation: none; }
       }
-
       .langsel {
         padding: 9px 10px;
-        border: 1.5px solid var(--ink);
+        border: 1px solid var(--ink);
         border-radius: 8px;
         background: var(--surface);
         color: var(--ink);
@@ -1134,35 +619,17 @@
         font-weight: 600;
         max-width: 230px;
       }
-      .langwrap {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-start;
-      }
+      .langwrap { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
       .langwrap label {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0;
         color: var(--ink3);
       }
-      [dir="rtl"] body {
-        text-align: right;
-      }
-      [dir="rtl"] .topstrip-in,
-      [dir="rtl"] .sec-head {
-        direction: rtl;
-      }
-      [dir="rtl"] .panel ul,
-      [dir="rtl"] .verdict ul {
-        padding-left: 0;
-        padding-right: 18px;
-      }
-      [dir="rtl"] .tasks button,
-      [dir="rtl"] .routine button {
-        text-align: right;
-      }
+      [dir="rtl"] body { text-align: right; }
+      [dir="rtl"] .topstrip-in, [dir="rtl"] .sec-head { direction: rtl; }
+      [dir="rtl"] .panel ul, [dir="rtl"] .verdict ul { padding-left: 0; padding-right: 18px; }
+      [dir="rtl"] .tasks button, [dir="rtl"] .routine button { text-align: right; }
     </style>
   </head>
   <body>
@@ -1171,14 +638,10 @@
       <div class="topstrip-in">
         <div>
           <h1>Agent<span>Hunt</span></h1>
-          <p data-i18n="tagline">
-            The airdrop tracker that's different: no account, no wallet connect, no ads — just you,
-            your own data file, the narratives heating up on social media, and a built-in anti-scam
-            check.
-          </p>
+          <p data-i18n="tagline">Your own airdrop tracker. No account, no wallet connect, no ads — your deadlines, your data, your rules.</p>
         </div>
         <div>
-          <div class="badges" style="margin-bottom: 10px">
+          <div class="badges">
             <span class="badge solid">100% Client-Side</span>
             <span class="badge">Open Source · MIT</span>
             <span class="badge" data-i18n="badge_noconnect">No Wallet Connect</span>
@@ -1222,13 +685,10 @@
       <div class="stats" id="stats"></div>
 
       <!-- Today's Focus — cards rendered by renderFocus() -->
-      <section id="fokus" data-panel="today" class="on" style="margin-top: 6px">
+      <section id="fokus" data-panel="today" class="on">
         <div class="focus">
-          <h2 id="focusTitle">⚡ Today's Focus — Wednesday, 11 Nov 2026</h2>
-          <p class="fsub" data-i18n="focus_sub">
-            What a hunter needs to do today, summed up in 10 seconds. Ordinary airdrop list sites
-            just show hundreds of entries; here only what matters rises to the top.
-          </p>
+          <h2 id="focusTitle">Today's Focus — Wednesday, 11 Nov 2026</h2>
+          <p class="fsub" data-i18n="focus_sub">What to do today, in one glance. Other list sites show hundreds of entries; here, only what matters.</p>
           <div class="focus-grid" id="focusGrid"></div>
         </div>
       </section>
@@ -1237,7 +697,7 @@
       <section id="radar" data-panel="today" class="on">
         <div class="sec-head">
           <h2 data-i18n="h_radar">Deadline Radar</h2>
-          <span class="meta" data-i18n="meta_radar">SORTED · FROM TRACKER + OPPORTUNITIES</span>
+          <span class="meta" data-i18n="meta_radar">Sorted · from tracker + opportunities</span>
         </div>
         <p class="sec-sub" data-i18n="sub_radar">
           Every deadline with a date, sorted nearest first — including ones already passed so you
@@ -1247,7 +707,7 @@
         <ul class="radar" id="radarList"></ul>
         <div class="io-row">
           <button class="btn primary" id="btnIcs">
-            ⬇ <span data-i18n="btn_ics">Download Calendar (.ics)</span>
+            <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg><span data-i18n="btn_ics">Download Calendar (.ics)</span>
           </button>
           <button class="btn" id="btnRoutineReset" data-i18n="btn_reset_routine">
             Reset Daily Routine
@@ -1260,7 +720,7 @@
         <div class="sec-head">
           <h2 data-i18n="h_tracker">My Tracker</h2>
           <span class="meta" data-i18n="meta_tracker"
-            >DATA LIVES IN THIS TAB ONLY · EXPORT TO KEEP IT</span
+            >Data lives in this tab only · export to keep it</span
           >
         </div>
         <p class="sec-sub" data-i18n="sub_tracker">
@@ -1268,12 +728,12 @@
           task to mark it done. Data lives only in this tab's memory: export it as a JSON file if
           you want to keep it or move it to another device.
         </p>
-        <div class="io-row" style="margin: 0 0 14px">
+        <div class="io-row io-tracker">
           <button class="btn primary" id="btnExport">
-            ⬇ <span data-i18n="btn_export">Export JSON (your own file)</span>
+            <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg><span data-i18n="btn_export">Export JSON (your own file)</span>
           </button>
           <label class="btn" for="fileImport" style="display: inline-block"
-            >⬆ <span data-i18n="btn_import">Import JSON</span></label
+            ><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><span data-i18n="btn_import">Import JSON</span></label
           >
           <input type="file" id="fileImport" accept=".json,application/json" hidden />
           <button class="btn" id="btnCopy" data-i18n="btn_copy">Copy JSON</button>
@@ -1285,7 +745,7 @@
       <section id="narasi" data-panel="opp">
         <div class="sec-head">
           <h2 data-i18n="h_narr">Trending Narratives on Social Media</h2>
-          <span class="meta">SNAPSHOT 8 NOV 2026 · DEXTRADING + BINANCE SQUARE</span>
+          <span class="meta">Snapshot 8 Nov 2026 · DexTrading + Binance Square</span>
         </div>
         <p class="sec-sub" data-i18n="sub_narr">
           Which narratives are hot this week — measured from trending-token volume on Solana, BNB
@@ -1330,7 +790,7 @@
         <div class="sec-head">
           <h2 data-i18n="h_opp">Airdrop Opportunities — November 2026</h2>
           <span class="meta" data-i18n="meta_opp"
-            >CHECKED 4–11 NOV 2026 · AIRDROPBUZZ / BINANCE / COINSPEAKER</span
+            >Checked 4–11 Nov 2026 · AirdropBuzz / Binance / Coinspeaker</span
           >
         </div>
         <p class="sec-sub" data-i18n="sub_opp">
@@ -1343,7 +803,7 @@
             type="search"
             id="searchOpp"
             data-i18n-ph="search_ph"
-            placeholder="Search project, chain, narrative… (press / to focus)"
+            placeholder="Search project, chain, narrative"
             aria-label="Search opportunities"
           />
           <button class="fbtn on" data-f="all" data-i18n="f_all">All</button>
@@ -1371,7 +831,7 @@
         <div class="sec-head">
           <h2 data-i18n="h_check">Anti-Scam Check — Before You Sign</h2>
           <span class="meta" data-i18n="meta_check"
-            >YOUR SCREENING RULES · RUNS OFFLINE IN YOUR BROWSER</span
+            >Your screening rules · runs offline in your browser</span
           >
         </div>
         <p class="sec-sub" data-i18n="sub_check">
@@ -1468,7 +928,7 @@
       <section id="alat" data-panel="tools">
         <div class="sec-head">
           <h2 data-i18n="h_tools">Hunter Tools</h2>
-          <span class="meta" data-i18n="meta_tools">COST CALCULATOR + DAILY ROUTINE</span>
+          <span class="meta" data-i18n="meta_tools">Cost calculator + daily routine</span>
         </div>
         <div class="two">
           <div class="panel">
@@ -1477,7 +937,7 @@
               Do the math before you spend gas. Rails in use: free-mint gas &lt; $1, paid mint max
               $2, total max $5/day.
             </p>
-            <div class="form-grid" style="margin-top: 10px">
+            <div class="form-grid calc-grid">
               <div class="field">
                 <label for="cGas" data-i18n="c_gas">Gas per Transaction ($)</label
                 ><input id="cGas" type="number" min="0" step="0.01" value="0.05" />
@@ -1502,7 +962,7 @@
             <p data-i18n="routine_desc">
               A consistent daily rhythm beats hundreds of random lists. Tap to mark done for today.
             </p>
-            <ul class="routine" id="routineList" style="margin-top: 8px"></ul>
+            <ul class="routine" id="routineList"></ul>
             <div class="prog"><i id="routineBar" style="width: 0%"></i></div>
             <div class="prog-row">
               <span id="routineLabel">0 / 5 done today</span
@@ -1516,7 +976,7 @@
       <section id="banding" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_diff">How AgentHunt Differs from Other Airdrop Apps</h2>
-          <span class="meta" data-i18n="meta_diff">Why It's Better</span>
+          <span class="meta" data-i18n="meta_diff">Why different</span>
         </div>
         <p class="sec-sub" data-i18n="sub_diff">
           Airdrop list sites and quest platforms usually profit from your data and attention.
@@ -1534,7 +994,7 @@
       <section id="tambah" data-panel="tracker">
         <div class="sec-head">
           <h2 data-i18n="h_add">Add an Airdrop to Your Tracker</h2>
-          <span class="meta" data-i18n="meta_add">MANUAL · NO ACCOUNT</span>
+          <span class="meta" data-i18n="meta_add">Manual · no account</span>
         </div>
         <p class="sec-sub" data-i18n="sub_add">
           Found a new airdrop on X or Telegram? Add it here, then export the JSON so it isn't lost
@@ -1607,7 +1067,7 @@
       <section id="desentral" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_decent">Truly Decentralized</h2>
-          <span class="meta" data-i18n="meta_decent">NO SERVER · NO DATABASE · NO ACCOUNT</span>
+          <span class="meta" data-i18n="meta_decent">No server · no database · no account</span>
         </div>
         <p class="sec-sub" data-i18n="sub_decent">
           AgentHunt is a single HTML file. There is no backend that can shut down, no company holding
@@ -1685,7 +1145,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       <section id="kaamanan" data-panel="about">
         <div class="sec-head">
           <h2 data-i18n="h_safety">Safety Before You Join</h2>
-          <span class="meta" data-i18n="meta_safety">THE SCREENING RULES ALREADY IN USE</span>
+          <span class="meta" data-i18n="meta_safety">The screening rules already in use</span>
         </div>
         <div class="two">
           <div class="panel">
@@ -1823,7 +1283,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       var I18N = {
         en: {
           tagline:
-            "The airdrop tracker that's different: no account, no wallet connect, no ads — just you, your own data file, the narratives heating up on social media, and a built-in anti-scam check.",
+            "Your own airdrop tracker. No account, no wallet connect, no ads — your deadlines, your data, your rules.",
           badge_noconnect: "No Wallet Connect",
           badge_noads: "No Ads / Trackers",
           language: "Language",
@@ -1840,15 +1300,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           nav_safety: "Safety",
           nav_about: "About",
           focus_sub:
-            "What a hunter needs to do today, summed up in 10 seconds. Ordinary airdrop list sites just show hundreds of entries; here only what matters rises to the top.",
+            "What to do today, in one glance. Other list sites show hundreds of entries; here, only what matters.",
           h_radar: "Deadline Radar",
-          meta_radar: "SORTED · FROM TRACKER + OPPORTUNITIES",
+          meta_radar: "Sorted · from tracker + opportunities",
           sub_radar:
             "Every deadline with a date, sorted nearest first — including ones already passed so you can stop thinking about them. Download as a calendar .ics file to open in your phone calendar; the file is generated in your browser, nothing is sent anywhere.",
           btn_ics: "Download Calendar (.ics)",
           btn_reset_routine: "Reset Daily Routine",
           h_tracker: "My Tracker",
-          meta_tracker: "DATA LIVES IN THIS TAB ONLY · EXPORT TO KEEP IT",
+          meta_tracker: "Data lives in this tab only · export to keep it",
           sub_tracker:
             "These are the airdrops you've already joined — taken from your own hunting notes. Tap a task to mark it done. Data lives only in this tab's memory: export it as a JSON file if you want to keep it or move it to another device.",
           btn_export: "Export JSON (your own file)",
@@ -1861,10 +1321,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           narr_note:
             "Snapshot frozen when this app was built: Wednesday, 11 Nov 2026, 20:43 WIB. Narratives move fast — the numbers above are not live prices. Sources:",
           h_opp: "Airdrop Opportunities — November 2026",
-          meta_opp: "CHECKED 4–11 NOV 2026 · AIRDROPBUZZ / BINANCE / COINSPEAKER",
+          meta_opp: "Checked 4–11 Nov 2026 · AirdropBuzz / Binance / Coinspeaker",
           sub_opp:
             "Real campaigns running or just closed in November 2026, with their honest status — including ones not yet officially announced by their projects. Score /100 from AirdropBuzz where available; the usual “worth reporting” threshold: ≥ 65.",
-          search_ph: "Search project, chain, narrative… (press / to focus)",
+          search_ph: "Search project, chain, narrative",
           f_all: "All",
           f_active: "Still Joinable",
           f_claim: "Claim / Distribution",
@@ -1876,7 +1336,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           empty_title: "No matches",
           empty_sub: "Change your search or filter.",
           h_check: "Anti-Scam Check — Before You Sign",
-          meta_check: "YOUR SCREENING RULES · RUNS OFFLINE IN YOUR BROWSER",
+          meta_check: "Your screening rules · runs offline in your browser",
           sub_check:
             "A feature ordinary airdrop list sites don't have: enter your check results for a new project you found on X/Telegram and get a GO / CAUTION / NO-GO verdict based on the screening rules you already use. No data is sent anywhere — the math happens only in your browser.",
           s_red: "DappBay Red Alarm (BNB Chain)",
@@ -1908,7 +1368,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           o_upside_no: "No evidence — project promises only",
           btn_verdict: "Get Verdict",
           h_tools: "Hunter Tools",
-          meta_tools: "COST CALCULATOR + DAILY ROUTINE",
+          meta_tools: "Cost calculator + daily routine",
           calc_title: "Farming Cost Calculator",
           calc_desc:
             "Do the math before you spend gas. Rails in use: free-mint gas < $1, paid mint max $2, total max $5/day.",
@@ -1921,11 +1381,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
             "A consistent daily rhythm beats hundreds of random lists. Tap to mark done for today.",
           routine_reset_note: "Reset with the button in Deadline Radar",
           h_diff: "How AgentHunt Differs from Other Airdrop Apps",
-          meta_diff: "Why It's Better",
+          meta_diff: "Why different",
           sub_diff:
             "Airdrop list sites and quest platforms usually profit from your data and attention. AgentHunt is designed the opposite way:",
           h_add: "Add an Airdrop to Your Tracker",
-          meta_add: "MANUAL · NO ACCOUNT",
+          meta_add: "Manual · no account",
           sub_add:
             "Found a new airdrop on X or Telegram? Add it here, then export the JSON so it isn't lost when the tab closes.",
           f_name: "Project Name *",
@@ -1949,7 +1409,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           btn_add: "+ Add to Tracker",
           btn_reset: "Reset",
           h_decent: "Truly Decentralized",
-          meta_decent: "NO SERVER · NO DATABASE · NO ACCOUNT",
+          meta_decent: "No server · no database · no account",
           sub_decent:
             "AgentHunt is a single HTML file. There is no backend that can shut down, no company holding your data, no login. The flow:",
           flow1_t: "1 · Your Device",
@@ -1974,7 +1434,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           oss_desc:
             "All of AgentHunt's code is inside this file itself: open View Source in your browser and you see exactly what runs — no hidden code, no ad trackers, no analytics. One compact file with no images and no heavy libraries, so it opens instantly even on a weak signal. Copy, modify and share it freely under the MIT license; planned publication: the Billsmokes GitHub repo once the app has been tried out.",
           h_safety: "Safety Before You Join",
-          meta_safety: "THE SCREENING RULES ALREADY IN USE",
+          meta_safety: "The screening rules already in use",
           safe1_t: "Check first, sign later",
           safe1_1:
             "<b>Score &lt; 65/100</b> (where an independent score exists) → never report it as “promising”, let alone execute it.",
@@ -2002,21 +1462,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           stat_tasks_s: "of all tracker checklists",
           stat_nextdl: "Nearest Opportunity Deadline",
           stat_nextdl_from: "from Opportunities",
-          stat_hottest: "Hottest Narrative",
+          stat_hottest: "Top Narrative",
           stat_hottest_s: "$34.45M 24h volume · snapshot 8 Nov",
-          focus_title: "⚡ Today's Focus — Wednesday, 11 Nov 2026",
-          f_bagent_k: "🌅 Morning · 07:01 WIB · FCFS",
+          focus_title: "Today's Focus — Wednesday, 11 Nov 2026",
+          f_bagent_k: "Morning · 07:01 WIB · FCFS",
           f_bagent_t: "BAGENT Daily Claim",
-          f_next_k: "⏳ Nearest Deadline",
-          f_narr_k: "🔥 Narrative Heating Up",
+          f_next_k: "Nearest deadline",
+          f_narr_k: "Trending narrative",
           f_narr_t: "DeFi & Finance, then AI",
           f_narr_s:
             "$34.45M + $28.74M 24h volume (snapshot 8 Nov). Linked opportunities: Aster, Nullmask, Amadeus.",
-          f_tasks_k: "✅ Open Tracker Tasks",
-          f_rule_k: "🛡️ Today's Rule",
+          f_tasks_k: "Open tracker tasks",
+          f_rule_k: "Today's rule",
           f_rule_t: "Score < 65 = skip · Gas < $1",
           f_rule_s: "Red Alarm FLAGGED = always NO-GO. New project? Run the Anti-Scam Check first.",
-          f_backup_k: "💾 Backup",
+          f_backup_k: "Backup",
           f_backup_t: "Export JSON regularly",
           f_backup_s:
             "Data lives only in this tab. Export after changing your tracker and store the file somewhere that's yours.",
@@ -2065,9 +1525,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           no_deadline_s: "Add an airdrop with a deadline date so it appears here.",
           default_task: "Check official rules and eligibility",
           dl_prefix: "Deadline ",
-          verdict_go: "✅ GO — Passes Basic Screening",
-          verdict_caution: "⚠️ CAUTION — Finish These Checks First",
-          verdict_nogo: "⛔ NO-GO — Do Not Execute",
+          verdict_go: "GO — Passes basic screening",
+          verdict_caution: "Caution — Finish these checks first",
+          verdict_nogo: "NO-GO — Do not execute",
           verdict_go_body:
             "All safety rails are met: verified contract, clean Red Alarm, score ≥ 65, a real market exists, and costs are within rails. Still preview before signing.",
           verdict_note:
@@ -2089,7 +1549,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       /* Indonesian */
       L("id", {
         tagline:
-          "Tracker airdrop yang berbeda: tanpa akun, tanpa wallet connect, tanpa iklan — hanya kamu, file datamu sendiri, narasi yang sedang ramai di sosmed, dan cek anti-scam bawaan.",
+          "Pelacak airdrop milikmu sendiri. Tanpa akun, tanpa connect wallet, tanpa iklan — deadline, data, dan aturanmu sendiri.",
         badge_noconnect: "Tanpa Wallet Connect",
         badge_noads: "Tanpa Iklan / Pelacak",
         language: "Bahasa",
@@ -2105,15 +1565,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         nav_decent: "Desentralisasi",
         nav_safety: "Keamanan",
         focus_sub:
-          "Yang harus dilakukan hunter hari ini, diringkas dalam 10 detik. Situs daftar airdrop biasa hanya menampilkan ratusan daftar; di sini hanya yang penting yang naik ke atas.",
+          "Yang harus dilakukan hari ini, sekilas saja. Situs daftar lain menampilkan ratusan entri; di sini hanya yang penting.",
         h_radar: "Radar Deadline",
-        meta_radar: "TERURUT · DARI TRACKER + PELUANG",
+        meta_radar: "Terurut · dari tracker + peluang",
         sub_radar:
           "Semua deadline bertanggal, diurutkan dari yang terdekat — termasuk yang sudah lewat agar tidak dipikirkan lagi. Unduh sebagai file kalender .ics untuk dibuka di kalender HP kamu; file dibuat di browser, tidak ada yang dikirim ke mana-mana.",
         btn_ics: "Unduh Kalender (.ics)",
         btn_reset_routine: "Reset Rutinitas Harian",
         h_tracker: "Tracker Saya",
-        meta_tracker: "DATA HANYA DI TAB INI · EXPORT UNTUK MENYIMPAN",
+        meta_tracker: "Data hanya di tab ini · export untuk menyimpan",
         sub_tracker:
           "Ini daftar airdrop yang sudah kamu ikuti — dari catatan hunting kamu sendiri. Klik tugas untuk menandai selesai. Data hanya hidup di memori tab ini: export sebagai file JSON jika ingin menyimpan atau memindahkannya.",
         btn_export: "Export JSON (file milikmu)",
@@ -2126,7 +1586,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         h_opp: "Peluang Airdrop — November 2026",
         sub_opp:
           "Kampanye nyata yang sedang berjalan atau baru tutup di November 2026, dengan status jujurnya — termasuk yang belum diumumkan resmi oleh proyeknya. Skor /100 dari AirdropBuzz bila ada; ambang “layak dilapor” yang biasa dipakai: ≥ 65.",
-        search_ph: "Cari proyek, chain, narasi… (tekan / untuk fokus)",
+        search_ph: "Cari proyek, chain, narasi",
         f_all: "Semua",
         f_active: "Masih Bisa Diikuti",
         f_claim: "Klaim / Distribusi",
@@ -2159,10 +1619,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         footer_note:
           "AgentHunt · Bukan nasihat keuangan. Snapshot 11 Nov 2026 — selalu cek ulang deadline dan aturan resmi proyek sebelum mengeluarkan gas atau dana.",
         nav_about: "Tentang",
-        meta_opp: "DICEK 4–11 NOV 2026 · AIRDROPBUZZ / BINANCE / COINSPEAKER",
+        meta_opp: "Dicek 4–11 Nov 2026 · AirdropBuzz / Binance / Coinspeaker",
         narr_note:
           "Snapshot dibekukan saat aplikasi ini dibuat: Rabu, 11 Nov 2026, 20:43 WIB. Narasi bergerak cepat — angka di atas bukan harga live. Sumber:",
-        meta_check: "ATURAN SCREENING KAMU · JALAN OFFLINE DI BROWSER",
+        meta_check: "Aturan screening kamu · jalan offline di browser",
         s_red: "DappBay Red Alarm (BNB Chain)",
         o_clean: "Tidak terdaftar (bersih)",
         o_unchecked: "Belum dicek",
@@ -2190,7 +1650,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         s_upside: "Bukti Upside / Permintaan Beli?",
         o_upside_yes: "Ya — likuiditas / penjualan nyata",
         o_upside_no: "Tidak ada bukti — hanya janji proyek",
-        meta_tools: "KALKULATOR BIAYA + RUTINITAS HARIAN",
+        meta_tools: "Kalkulator biaya + rutinitas harian",
         calc_desc:
           "Hitung dulu sebelum keluar gas. Rel yang dipakai: gas mint gratis < $1, mint berbayar maks $2, total maks $5/hari.",
         c_gas: "Gas per Transaksi ($)",
@@ -2200,8 +1660,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         routine_desc:
           "Ritme harian yang konsisten mengalahkan ratusan daftar acak. Klik untuk menandai selesai hari ini.",
         routine_reset_note: "Reset dengan tombol di Radar Deadline",
-        meta_diff: "Kenapa Lebih Baik",
-        meta_add: "MANUAL · TANPA AKUN",
+        meta_diff: "Kenapa berbeda",
+        meta_add: "Manual · tanpa akun",
         f_name: "Nama Proyek *",
         f_name_ph: "mis. Nullmask",
         f_chain: "Chain / Ekosistem",
@@ -2220,7 +1680,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         f_tasks_ph: "Hubungkan wallet\nSwap di testnet\nGabung Discord",
         f_note: "Catatan",
         f_note_ph: "mis. gas < $1, skor 70/100, kontrak terverifikasi",
-        meta_decent: "TANPA SERVER · TANPA DATABASE · TANPA AKUN",
+        meta_decent: "Tanpa server · tanpa database · tanpa akun",
         flow1_t: "1 · Perangkat Kamu",
         flow1_d:
           "Tracker berjalan sepenuhnya di browser HP/laptop kamu. Data airdrop kamu ada di memori tab ini — bukan di cloud siapa pun.",
@@ -2242,7 +1702,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         oss_title: "Open Source — Lisensi MIT",
         oss_desc:
           "Semua kode AgentHunt ada di dalam file ini sendiri: buka View Source di browser dan kamu melihat persis apa yang berjalan — tanpa kode tersembunyi, tanpa pelacak iklan, tanpa analytics. Satu file ringkas tanpa gambar dan tanpa library berat, jadi terbuka seketika bahkan di sinyal lemah. Salin, ubah, dan bagikan bebas di bawah lisensi MIT; rencana publikasi: repo GitHub Billsmokes setelah aplikasinya dicoba.",
-        meta_safety: "ATURAN SCREENING YANG SUDAH DIPAKAI",
+        meta_safety: "Aturan screening yang sudah dipakai",
         safe1_t: "Cek dulu, tanda tangan belakangan",
         safe1_1:
           "<b>Skor &lt; 65/100</b> (bila skor independen ada) → jangan pernah dilaporkan sebagai “menjanjikan”, apalagi dieksekusi.",
@@ -2268,21 +1728,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         stat_tasks_s: "dari semua checklist tracker",
         stat_nextdl: "Deadline Peluang Terdekat",
         stat_nextdl_from: "dari Peluang",
-        stat_hottest: "Narasi Terpanas",
+        stat_hottest: "Narasi Teratas",
         stat_hottest_s: "Volume 24 jam $34.45M · snapshot 8 Nov",
-        focus_title: "⚡ Fokus Hari Ini — Rabu, 11 Nov 2026",
-        f_bagent_k: "🌅 Pagi · 07:01 WIB · FCFS",
+        focus_title: "Fokus Hari Ini — Rabu, 11 Nov 2026",
+        f_bagent_k: "Pagi · 07:01 WIB · FCFS",
         f_bagent_t: "Klaim Harian BAGENT",
-        f_next_k: "⏳ Deadline Terdekat",
-        f_narr_k: "🔥 Narasi Sedang Panas",
+        f_next_k: "Deadline terdekat",
+        f_narr_k: "Narasi trending",
         f_narr_t: "DeFi & Keuangan, lalu AI",
         f_narr_s:
           "Volume 24 jam $34.45M + $28.74M (snapshot 8 Nov). Peluang terkait: Aster, Nullmask, Amadeus.",
-        f_tasks_k: "✅ Tugas Tracker Terbuka",
-        f_rule_k: "🛡️ Aturan Hari Ini",
+        f_tasks_k: "Tugas tracker terbuka",
+        f_rule_k: "Aturan hari ini",
         f_rule_t: "Skor < 65 = lewati · Gas < $1",
         f_rule_s: "Red Alarm FLAGGED = selalu NO-GO. Proyek baru? Jalankan Cek Anti-Scam dulu.",
-        f_backup_k: "💾 Backup",
+        f_backup_k: "Backup",
         f_backup_t: "Export JSON secara rutin",
         f_backup_s:
           "Data hanya hidup di tab ini. Export setelah mengubah tracker dan simpan file-nya di tempat milikmu.",
@@ -2331,9 +1791,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         no_deadline_s: "Tambahkan airdrop dengan tanggal deadline agar muncul di sini.",
         default_task: "Cek aturan resmi dan kelayakan",
         dl_prefix: "Deadline ",
-        verdict_go: "✅ GO — Lolos Screening Dasar",
-        verdict_caution: "⚠️ HATI-HATI — Selesaikan Cek Ini Dulu",
-        verdict_nogo: "⛔ NO-GO — Jangan Dieksekusi",
+        verdict_go: "GO — Lolos screening dasar",
+        verdict_caution: "Hati-hati — Selesaikan cek ini dulu",
+        verdict_nogo: "NO-GO — Jangan dieksekusi",
         verdict_go_body:
           "Semua rel keamanan terpenuhi: kontrak terverifikasi, Red Alarm bersih, skor ≥ 65, pasar nyata ada, dan biaya dalam rel. Tetap preview sebelum tanda tangan.",
         verdict_note:
@@ -3261,7 +2721,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
       var NARRATIVES = [
         {
           id: "ai",
-          rank: "#1 AI VOLUME",
+          rank: "#1 AI volume",
           name: "AI Agents & AI Infrastructure",
           heat: 92,
           heatLabel: "$28.74M 24h vol",
@@ -3273,7 +2733,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         },
         {
           id: "defi",
-          rank: "#1 OVERALL",
+          rank: "#1 overall",
           name: "DeFi & Tokenized Finance",
           heat: 100,
           heatLabel: "$34.45M 24h vol",
@@ -3285,7 +2745,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         },
         {
           id: "depin",
-          rank: "RISING",
+          rank: "Rising",
           name: "DePIN & AI Infrastructure",
           heat: 74,
           heatLabel: "ICNT +32% · ONE +46%",
@@ -3297,7 +2757,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         },
         {
           id: "meme",
-          rank: "#3 VOLUME",
+          rank: "#3 volume",
           name: "Culture & Viral Memes",
           heat: 48,
           heatLabel: "$11.87M 24h vol",
@@ -3309,7 +2769,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         },
         {
           id: "perps",
-          rank: "ACTIVE",
+          rank: "Active",
           name: "Perps DEX & Trading Points",
           heat: 68,
           heatLabel: "Hyperliquid S2 · Aster Phase 6",
@@ -3321,7 +2781,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         },
         {
           id: "pred",
-          rank: "HOT ON X",
+          rank: "Hot on X",
           name: "Prediction Markets",
           heat: 57,
           heatLabel: "Predict.fun S2 live",
@@ -3611,7 +3071,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         var en = {
           past: "{n} days ago",
           past1: "1 day ago",
-          today: "TODAY — deadline!",
+          today: "Today — deadline",
           days: "{n} days left",
           days1: "1 day left",
         };
@@ -3620,14 +3080,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
             id: {
               past: "{n} hari lalu",
               past1: "1 hari lalu",
-              today: "HARI INI — deadline!",
+              today: "Hari ini — deadline",
               days: "{n} hari lagi",
               days1: "1 hari lagi",
             },
             ms: {
               past: "{n} hari lalu",
               past1: "1 hari lalu",
-              today: "HARI INI — tarikh akhir!",
+              today: "Hari ini — tarikh akhir",
               days: "{n} hari lagi",
               days1: "1 hari lagi",
             },
@@ -3635,9 +3095,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         if (days < 0)
           return {
             txt: days === -1 ? L10.past1 : L10.past.replace("{n}", Math.abs(days)),
-            cls: "urgent",
+            cls: "past",
           };
-        if (days === 0) return { txt: L10.today, cls: "urgent" };
+        if (days === 0) return { txt: L10.today, cls: "soon" };
         if (days <= 7)
           return { txt: days === 1 ? L10.days1 : L10.days.replace("{n}", days), cls: "soon" };
         if (days <= 30) return { txt: L10.days.replace("{n}", days), cls: "" };
@@ -3720,6 +3180,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
 
     <script>
       "use strict";
+      /* ================= LINE ICONS (inline SVG, lucide-style) ================= */
+      var ICONS = {
+        sunrise: '<circle cx="12" cy="12" r="4"/><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="M19.07 10.93l-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        "trending-up": '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+        "list-checks": '<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+        shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+        download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+        upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+        "check-circle": '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+        "alert-triangle": '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        "x-octagon": '<polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/>',
+      };
+      function iconSvg(name, size) {
+        return (
+          '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+          (ICONS[name] || "") +
+          "</svg>"
+        );
+      }
       /* ================= RENDER: STATS BAR (also kicks off Focus + Radar) ================= */
       function renderStats() {
         var nextDl = null;
@@ -3748,7 +3228,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           esc(t("stat_tasks")) +
           '</span><div class="v">' +
           td +
-          ' <span style="font-size:15px;color:var(--ink3)">/ ' +
+          '<span class="stat-total">/' +
           ta +
           '</span></div><div class="s">' +
           esc(t("stat_tasks_s")) +
@@ -3892,16 +3372,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
             ? "Checklist BAGENT sudah selesai semua hari ini."
             : "BAGENT checklist fully done today.";
         $("focusGrid").innerHTML =
-          '<div class="fitem hot"><div class="fk">' +
-          esc(t("f_bagent_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem hot"><div class="fk"><span class="fk-ic">' + iconSvg("sunrise", 14) + '</span><span>' + esc(t("f_bagent_k")) + '</span></div><div class="fv">' +
           esc(t("f_bagent_t")) +
           '</div><div class="fs">' +
           esc(bagS) +
           "</div></div>" +
-          '<div class="fitem"><div class="fk">' +
-          esc(t("f_next_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem"><div class="fk"><span class="fk-ic">' + iconSvg("clock", 14) + '</span><span>' + esc(t("f_next_k")) + '</span></div><div class="fv">' +
           (next ? esc(next.name) : "—") +
           '</div><div class="fs">' +
           (next
@@ -3912,16 +3388,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
               esc(next.label)
             : esc(t("no_upcoming"))) +
           "</div></div>" +
-          '<div class="fitem"><div class="fk">' +
-          esc(t("f_narr_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem"><div class="fk"><span class="fk-ic">' + iconSvg("trending-up", 14) + '</span><span>' + esc(t("f_narr_k")) + '</span></div><div class="fv">' +
           esc(t("f_narr_t")) +
           '</div><div class="fs">' +
           esc(t("f_narr_s")) +
           "</div></div>" +
-          '<div class="fitem"><div class="fk">' +
-          esc(t("f_tasks_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem"><div class="fk"><span class="fk-ic">' + iconSvg("list-checks", 14) + '</span><span>' + esc(t("f_tasks_k")) + '</span></div><div class="fv">' +
           open +
           " " +
           esc(t("tasks_word")) +
@@ -3932,16 +3404,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           " " +
           esc(t("projects_word")) +
           "</div></div>" +
-          '<div class="fitem"><div class="fk">' +
-          esc(t("f_rule_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem"><div class="fk"><span class="fk-ic">' + iconSvg("shield", 14) + '</span><span>' + esc(t("f_rule_k")) + '</span></div><div class="fv">' +
           esc(t("f_rule_t")) +
           '</div><div class="fs">' +
           esc(t("f_rule_s")) +
           "</div></div>" +
-          '<div class="fitem"><div class="fk">' +
-          esc(t("f_backup_k")) +
-          '</div><div class="fv">' +
+          '<div class="fitem"><div class="fk"><span class="fk-ic">' + iconSvg("download", 14) + '</span><span>' + esc(t("f_backup_k")) + '</span></div><div class="fv">' +
           esc(t("f_backup_t")) +
           '</div><div class="fs">' +
           esc(t("f_backup_s")) +
@@ -3961,14 +3429,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
         $("radarList").innerHTML = rows
           .map(function (r) {
             var c = countdown(r.deadline);
-            var cls =
-              r.deadline < "2026-11-10"
-                ? "past"
-                : c.cls === "urgent"
-                  ? "urgent"
-                  : c.cls === "soon"
-                    ? "soon"
-                    : "";
+            var cls = r.deadline < "2026-11-10" ? "past" : c.cls === "soon" ? "soon" : "";
+            var stampCls = cls === "past" ? "past" : c.cls === "soon" ? "soon" : "ok";
             return (
               '<li><span class="dot ' +
               cls +
@@ -3980,11 +3442,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
               esc(r.from) +
               '</span></span><span class="rwhen"><b>' +
               esc(fmtDate(r.deadline)) +
-              '</b><span class="count ' +
-              c.cls +
-              '">' +
-              esc(c.txt) +
-              "</span></span></li>"
+              '</b><span class="stamp ' + stampCls + '">' + esc(c.txt) + "</span></span></li>"
             );
           })
           .join("");
@@ -4210,7 +3668,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           .join("");
         box.className = "verdict show " + cls;
         box.innerHTML =
-          "<h4>" +
+          "<h4><span class=\"v-ic\">" +
+          iconSvg(cls === "go" ? "check-circle" : cls === "caution" ? "alert-triangle" : "x-octagon", 18) +
+          "</span>" +
           esc(title) +
           "</h4>" +
           (items
@@ -4274,10 +3734,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
           mint.toFixed(2) +
           "</span>" +
           (warns.length
-            ? "<div style='margin-top:8px;color:var(--red);font-weight:700;font-size:13px'>⚠️ " +
-              warns.map(esc).join("<br>⚠️ ") +
+            ? "<div style='margin-top:8px;color:var(--red);font-weight:600;font-size:13px'>" +
+              warns
+                .map(function (w) {
+                  return '<span class="w-ic">' + iconSvg("alert-triangle", 16) + "</span>" + esc(w);
+                })
+                .join("<br>") +
               "</div>"
-            : "<div style='margin-top:8px;color:var(--green);font-weight:700;font-size:13px'>" +
+            : "<div style='margin-top:8px;color:var(--green);font-weight:600;font-size:13px'>" +
               esc(t("calc_within")) +
               "</div>") +
           "<div style='font-size:12.5px;color:var(--ink2);margin-top:6px'>" +
@@ -4542,7 +4006,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
               (c && x.deadline
                 ? '<div style="margin-top:8px"><span class="count ' +
                   c.cls +
-                  '">⏳ ' +
+                  '">' +
                   esc(fmtDate(x.deadline)) +
                   " · " +
                   esc(c.txt) +
